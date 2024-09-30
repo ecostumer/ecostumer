@@ -40,6 +40,12 @@ const nextConfig = {
       'utf-8-validate': false,
     }
 
+    // Ignorar arquivos .d.ts no processo de build
+    config.module.rules.push({
+      test: /\.d\.ts$/,
+      use: 'null-loader', // Isso garante que o Webpack ignore arquivos .d.ts
+    })
+
     return config
   },
 }
