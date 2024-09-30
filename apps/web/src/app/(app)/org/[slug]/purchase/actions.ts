@@ -83,7 +83,6 @@ export async function createPurchaseAction(data: FormData) {
   }
 
   try {
-    // Calcular o valor total da compra
     const totalPrice = validProducts.reduce(
       (total, product) => total + product.price * product.quantity,
       0,
@@ -92,7 +91,6 @@ export async function createPurchaseAction(data: FormData) {
     // Aplicar o desconto
     const finalPrice = totalPrice - (totalPrice * discount) / 100
 
-    // Criar a compra usando a função `createPurchase`
     await createPurchase({
       purchase: {
         description: observations || '',
