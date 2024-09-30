@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
-// import { unstable_noStore } from 'next/cache'
-import Image from 'next/image'
 
-import { Avatar } from '@/components/ui/avatar'
+// import { unstable_noStore } from 'next/cache'
+// import Image from 'next/image'
+// import { Avatar } from '@/components/ui/avatar'
 import {
   Card,
   CardContent,
@@ -10,14 +10,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
+// import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectTrigger } from '@/components/ui/select'
+// import { Select, SelectTrigger } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
-import { serverClient } from '@/lib/trpc/server'
+import { Table, TableBody } from '@/components/ui/table'
 
-import { ConnectBunnyAccount } from './connect-bunny-account'
+// import { serverClient } from '@/lib/trpc/server'
+// import { ConnectBunnyAccount } from './connect-bunny-account'
 
 export const metadata: Metadata = {
   title: 'Organization settings',
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 export default async function OrganizationPage() {
   // unstable_noStore()
 
-  const { company } = await serverClient.getCurrentUserCompany()
+  // const { company } = await serverClient.getCurrentUserCompany()
 
   return (
     <Card>
@@ -38,22 +38,22 @@ export default async function OrganizationPage() {
         <form className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
-            <Input
+            {/* <Input
               name="name"
               id="name"
               defaultValue={company.name ?? ''}
               disabled
-            />
+            /> */}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="domain">Domain</Label>
-            <Input
+            {/* <Input
               type="text"
               id="domain"
               defaultValue={company.domain ?? ''}
               disabled
-            />
+            /> */}
             <p className="text-[0.8rem] text-muted-foreground">
               All users that authenticate with this domain will automatically
               join your organization.
@@ -64,7 +64,7 @@ export default async function OrganizationPage() {
 
           <div className="space-y-2">
             <Label htmlFor="bunnyLibraryId">Bunny integration</Label>
-            <ConnectBunnyAccount externalId={company.externalId} />
+            {/* <ConnectBunnyAccount externalId={company.externalId} /> */}
           </div>
 
           <Separator />
@@ -74,7 +74,7 @@ export default async function OrganizationPage() {
             <div className="rounded border">
               <Table>
                 <TableBody>
-                  {company.members.map((member) => {
+                  {/* {company.members.map((member) => {
                     return (
                       <TableRow key={member.id}>
                         <TableCell style={{ width: 48 }}>
@@ -110,7 +110,7 @@ export default async function OrganizationPage() {
                         </TableCell>
                       </TableRow>
                     )
-                  })}
+                  })} */}
                 </TableBody>
               </Table>
             </div>

@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { VideoLibraries } from '@nivo/bunny'
+// import { VideoLibraries } from '@nivo/bunny'
 import { DialogTrigger } from '@radix-ui/react-dialog'
 import { Loader2 } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
-  SelectItem,
+  // SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
@@ -24,13 +24,13 @@ export const videoLibrarySchema = z.object({
 export type VideoLibrarySchema = z.infer<typeof videoLibrarySchema>
 
 interface BunnyVideoLibraryFormProps {
-  videoLibraries: VideoLibraries
+  // videoLibraries: VideoLibraries
   onVideoLibraryChosen: (data: VideoLibrarySchema) => Promise<void> | void
 }
 
 export function BunnyVideoLibraryForm({
   onVideoLibraryChosen,
-  videoLibraries,
+  // videoLibraries,
 }: BunnyVideoLibraryFormProps) {
   const {
     handleSubmit,
@@ -55,13 +55,13 @@ export function BunnyVideoLibraryForm({
                   <SelectValue placeholder="Choose a video library" />
                 </SelectTrigger>
                 <SelectContent>
-                  {videoLibraries.map((videoLibrary) => {
+                  {/* {videoLibraries.map((videoLibrary) => {
                     return (
                       <SelectItem key={videoLibrary.Id} value={videoLibrary.Id}>
                         {videoLibrary.Name}
                       </SelectItem>
                     )
-                  })}
+                  })} */}
                 </SelectContent>
               </Select>
             )

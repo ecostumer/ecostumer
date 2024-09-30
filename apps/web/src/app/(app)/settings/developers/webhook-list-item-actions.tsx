@@ -1,11 +1,11 @@
 'use client'
 
-import { RouterOutput } from '@nivo/trpc'
+// import { RouterOutput } from '@nivo/trpc'
 import { Pencil2Icon } from '@radix-ui/react-icons'
-import { Loader2, MoreHorizontal, X } from 'lucide-react'
+import { MoreHorizontal } from 'lucide-react'
 import { useState } from 'react'
-import { toast } from 'sonner'
 
+// import { toast } from 'sonner'
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -16,7 +16,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { Badge } from '@/components/ui/badge'
+// import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -32,40 +32,38 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { trpc } from '@/lib/trpc/react'
 
-import { WebhookForm } from './webhook-form'
+// import { trpc } from '@/lib/trpc/react'
+// import { WebhookForm } from './webhook-form'
 
-interface WebhookListItemActionsProps {
-  webhook: RouterOutput['getCompanyWebhooks']['companyWebhooks'][number]
-}
+// interface WebhookListItemActionsProps {
+//   webhook: RouterOutput['getCompanyWebhooks']['companyWebhooks'][number]
+// }
 
-export function WebhookListItemActions({
-  webhook,
-}: WebhookListItemActionsProps) {
+export function WebhookListItemActions() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const utils = trpc.useUtils()
+  // const utils = trpc.useUtils()
 
-  const { mutateAsync: deleteCompanyWebhook, isPending: isDeletingWebhook } =
-    trpc.deleteCompanyWebhook.useMutation({
-      onSuccess() {
-        utils.getCompanyWebhooks.invalidate()
-      },
-    })
+  // const { mutateAsync: deleteCompanyWebhook, isPending: isDeletingWebhook } =
+  //   trpc.deleteCompanyWebhook.useMutation({
+  //     onSuccess() {
+  //       utils.getCompanyWebhooks.invalidate()
+  //     },
+  //   })
 
-  async function handleDeleteWebhook() {
-    try {
-      await deleteCompanyWebhook({
-        companyWebhookId: webhook.id,
-      })
+  // async function handleDeleteWebhook() {
+  //   try {
+  //     await deleteCompanyWebhook({
+  //       companyWebhookId: webhook.id,
+  //     })
 
-      setIsDeleteDialogOpen(false)
-    } catch {
-      toast('Uh oh! Something went wrong.', {
-        description: `An error ocurred while trying to delete the webhook.`,
-      })
-    }
-  }
+  //     setIsDeleteDialogOpen(false)
+  //   } catch {
+  //     toast('Uh oh! Something went wrong.', {
+  //       description: `An error ocurred while trying to delete the webhook.`,
+  //     })
+  //   }
+  // }
 
   return (
     <DropdownMenu>
@@ -92,7 +90,7 @@ export function WebhookListItemActions({
               </DialogDescription>
             </DialogHeader>
 
-            <WebhookForm webhookToEdit={webhook} />
+            {/* <WebhookForm webhookToEdit={webhook} /> */}
           </DialogContent>
         </Dialog>
 
@@ -101,13 +99,13 @@ export function WebhookListItemActions({
           onOpenChange={setIsDeleteDialogOpen}
         >
           <AlertDialogTrigger asChild>
-            <DropdownMenuItem
+            {/* <DropdownMenuItem
               disabled={isDeletingWebhook}
               onSelect={(e) => e.preventDefault()}
             >
               <X className="mr-2 size-4" />
               Delete
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
           </AlertDialogTrigger>
 
           <AlertDialogContent>
@@ -120,7 +118,7 @@ export function WebhookListItemActions({
                 </p>
                 <p>This webhook is listening to the following events:</p>
                 <ol className="list-disc space-y-2 pl-4">
-                  {webhook.triggers.map((trigger) => {
+                  {/* {webhook.triggers.map((trigger) => {
                     return (
                       <li key={trigger}>
                         <Badge className="px-1" variant="secondary">
@@ -128,13 +126,13 @@ export function WebhookListItemActions({
                         </Badge>
                       </li>
                     )
-                  })}
+                  })} */}
                 </ol>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <Button
+              {/* <Button
                 disabled={isDeletingWebhook}
                 variant="destructive"
                 className="w-20"
@@ -145,7 +143,7 @@ export function WebhookListItemActions({
                 ) : (
                   'Delete'
                 )}
-              </Button>
+              </Button> */}
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
