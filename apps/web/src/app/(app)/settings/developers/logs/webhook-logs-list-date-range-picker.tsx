@@ -1,11 +1,11 @@
 'use client'
 
-import { dayjs } from '@nivo/dayjs'
+// import { dayjs } from '@nivo/dayjs'
 import { Calendar as CalendarIcon } from 'lucide-react'
 import * as React from 'react'
-import { DateRange } from 'react-day-picker'
-import { twMerge } from 'tailwind-merge'
 
+// import { DateRange } from 'react-day-picker'
+// import { twMerge } from 'tailwind-merge'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import {
@@ -22,10 +22,10 @@ import {
 } from '@/components/ui/select'
 
 export function WebhookLogsListDateRangePicker() {
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: dayjs(new Date()).subtract(7, 'days').toDate(),
-    to: new Date(),
-  })
+  // const [date, setDate] = React.useState<DateRange | undefined>({
+  //   from: dayjs(new Date()).subtract(7, 'days').toDate(),
+  //   to: new Date(),
+  // })
 
   return (
     <Popover>
@@ -33,13 +33,13 @@ export function WebhookLogsListDateRangePicker() {
         <Button
           variant="outline"
           size="sm"
-          className={twMerge(
-            'w-[240px] justify-start text-left font-normal',
-            !date && 'text-muted-foreground',
-          )}
+          // className={twMerge(
+          //   'w-[240px] justify-start text-left font-normal',
+          //   !date && 'text-muted-foreground',
+          // )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date?.from ? (
+          {/* {date?.from ? (
             date.to ? (
               <>
                 {date.from.toLocaleDateString('pt-BR', {
@@ -59,7 +59,7 @@ export function WebhookLogsListDateRangePicker() {
             )
           ) : (
             <span>Pick a date</span>
-          )}
+          )} */}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="flex w-auto flex-col space-y-2 p-2">
@@ -78,8 +78,8 @@ export function WebhookLogsListDateRangePicker() {
           <Calendar
             mode="range"
             numberOfMonths={2}
-            selected={date}
-            onSelect={setDate}
+            // selected={date}
+            // onSelect={setDate}
           />
         </div>
       </PopoverContent>

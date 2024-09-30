@@ -27,7 +27,7 @@ export interface WebhooksProps {
   videoId: string
 }
 
-export function Webhooks({ videoId }: WebhooksProps) {
+export function Webhooks() {
   // const {
   //   data,
   //   isLoading: isLoadingWebhooks,

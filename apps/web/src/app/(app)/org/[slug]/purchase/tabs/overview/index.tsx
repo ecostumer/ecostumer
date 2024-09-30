@@ -25,14 +25,13 @@ interface OverviewProps {
   products: Product[]
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function Overview({ products }: OverviewProps) {
-  const [selectedProductsDetails, setSelectedProductsDetails] = useState<
-    Product[]
-  >([])
+  const [selectedProductsDetails] = useState<Product[]>([])
   const [totalPrice, setTotalPrice] = useState(0)
   const [finalPrice, setFinalPrice] = useState(0)
   const [discountAmount, setDiscountAmount] = useState(0)
-  const [discount, setDiscount] = useState('0')
+  const [discount] = useState('0')
 
   useEffect(() => {
     if (selectedProductsDetails.length > 0) {
@@ -63,12 +62,7 @@ export function Overview({ products }: OverviewProps) {
           <CardDescription>Preencha os detalhes da venda</CardDescription>
         </CardHeader>
         <CardContent>
-          <PurchaseForm
-            products={products}
-            setSelectedProductsDetails={setSelectedProductsDetails}
-            discount={discount}
-            setDiscount={setDiscount}
-          />
+          <PurchaseForm />
         </CardContent>
       </Card>
 

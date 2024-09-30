@@ -57,6 +57,7 @@ export function CreateNewTagDialog({
   //   },
   // })
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async function handleCreateTag({ tag }: NewTagFormSchema) {
     try {
       // await createTag({ tag })

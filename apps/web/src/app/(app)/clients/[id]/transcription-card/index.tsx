@@ -35,7 +35,6 @@ type TranscriptionSegmentsFormSchema = z.infer<
 >
 
 export function TranscriptionCard({
-  videoId,
   shouldDisplayVideo,
 }: TranscriptionCardProps) {
   const [shouldFollowUserFocus, setShouldFollowUserFocus] = useState(true)

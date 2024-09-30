@@ -1,56 +1,57 @@
 'use client'
 
-import { dayjs } from '@shortify/dayjs'
-import { SymbolIcon } from '@radix-ui/react-icons'
-import { Cable, CopyIcon, Loader2, ReceiptText } from 'lucide-react'
-import Image from 'next/image'
-import Link from 'next/link'
+// import { SymbolIcon } from '@radix-ui/react-icons'
+// import { dayjs } from '@shortify/dayjs'
+// import { Cable, CopyIcon, Loader2, ReceiptText } from 'lucide-react'
+// import Image from 'next/image'
+// import Link from 'next/link'
 
-import { CopyButton } from '@/components/copy-button'
-import { TranscriptionPreview } from '@/components/transcription-preview'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
-import { UploadItemActions } from '@/components/upload-item-actions'
-import { trpc } from '@/lib/trpc/react'
-import { formatBytes } from '@/utils/format-bytes'
-import { formatSecondsToMinutes } from '@/utils/format-seconds-to-minutes'
+// import { CopyButton } from '@/components/copy-button'
+// import { TranscriptionPreview } from '@/components/transcription-preview'
+// import {
+//   Table,
+//   TableBody,
+//   TableCell,
+//   TableHead,
+//   TableHeader,
+//   TableRow,
+// } from '@/components/ui/table'
+// import {
+//   Tooltip,
+//   TooltipContent,
+//   TooltipTrigger,
+// } from '@/components/ui/tooltip'
+// import { UploadItemActions } from '@/components/upload-item-actions'
+// import { trpc } from '@/lib/trpc/react'
+// import { formatBytes } from '@/utils/format-bytes'
+// import { formatSecondsToMinutes } from '@/utils/format-seconds-to-minutes'
 
-import { BatchUploadSkeletonTable } from './batch-upload-skeleton-table'
+// import { BatchUploadSkeletonTable } from './batch-upload-skeleton-table'
 
 export interface BatchUploadListProps {
   batchId: string
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function BatchUploadList({ batchId }: BatchUploadListProps) {
-  const {
-    data,
-    isLoading: isLoadingBatch,
-    isRefetching: isRefetchingBatch,
-  } = trpc.getUploadBatch.useQuery(
-    {
-      batchId,
-    },
-    {
-      refetchInterval: 15 * 1000,
-      refetchIntervalInBackground: false,
-      refetchOnWindowFocus: true,
-    },
-  )
+  // const {
+  //   data,
+  //   isLoading: isLoadingBatch,
+  //   isRefetching: isRefetchingBatch,
+  // } = trpc.getUploadBatch.useQuery(
+  //   {
+  //     batchId,
+  //   },
+  //   {
+  //     refetchInterval: 15 * 1000,
+  //     refetchIntervalInBackground: false,
+  //     refetchOnWindowFocus: true,
+  //   },
+  // )
 
   return (
     <>
-      <div className="rounded-md border">
+      {/* <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
@@ -197,7 +198,7 @@ export function BatchUploadList({ batchId }: BatchUploadListProps) {
             </TableBody>
           )}
         </Table>
-      </div>
+      </div> */}
     </>
   )
 }

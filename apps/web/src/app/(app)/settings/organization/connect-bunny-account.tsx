@@ -1,10 +1,10 @@
 'use client'
 
-import { getBunnyVideoLibraries, VideoLibraries } from '@nivo/bunny'
+// import { getBunnyVideoLibraries, VideoLibraries } from '@nivo/bunny'
 import { Check, Plug } from 'lucide-react'
 import { useState } from 'react'
-import { toast } from 'sonner'
 
+// import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -15,14 +15,14 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { trpc } from '@/lib/trpc/react'
 
-import { onBunnyAccountConnected } from './actions'
-import { APIKeySchema, BunnyApiKeyForm } from './bunny-api-key-form'
-import {
-  BunnyVideoLibraryForm,
-  VideoLibrarySchema,
-} from './bunny-video-library-form'
+// import { trpc } from '@/lib/trpc/react'
+// import { onBunnyAccountConnected } from './actions'
+// import { APIKeySchema, BunnyApiKeyForm } from './bunny-api-key-form'
+// import {
+//   BunnyVideoLibraryForm,
+//   VideoLibrarySchema,
+// } from './bunny-video-library-form'
 
 interface ConnectBunnyAccountProps {
   externalId: string | null
@@ -30,55 +30,55 @@ interface ConnectBunnyAccountProps {
 
 export function ConnectBunnyAccount({ externalId }: ConnectBunnyAccountProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [bunnyVideoLibraries, setBunnyVideoLibraries] =
-    useState<VideoLibraries>([])
+  // const [bunnyVideoLibraries, setBunnyVideoLibraries] =
+  //   useState<VideoLibraries>([])
 
-  const { mutateAsync: setBunnyLibraryAndAPIKey } =
-    trpc.setBunnyLibraryAndAPIKey.useMutation()
+  // const { mutateAsync: setBunnyLibraryAndAPIKey } =
+  //   trpc.setBunnyLibraryAndAPIKey.useMutation()
 
-  async function handleApiKey({ apiKey }: APIKeySchema) {
-    try {
-      const { videoLibraries } = await getBunnyVideoLibraries(apiKey)
+  // async function handleApiKey({ apiKey }: APIKeySchema) {
+  //   try {
+  //     const { videoLibraries } = await getBunnyVideoLibraries(apiKey)
 
-      setBunnyVideoLibraries(videoLibraries)
-    } catch (err) {
-      toast.error(
-        'Failed to fetch Bunny video library, please check the API key provided.',
-      )
-    }
-  }
+  //     setBunnyVideoLibraries(videoLibraries)
+  //   } catch (err) {
+  //     toast.error(
+  //       'Failed to fetch Bunny video library, please check the API key provided.',
+  //     )
+  //   }
+  // }
 
-  async function handleVideoLibraryChosen({
-    videoLibraryId,
-  }: VideoLibrarySchema) {
-    try {
-      const videoLibrary = bunnyVideoLibraries.find(
-        (item) => item.Id === videoLibraryId,
-      )
+  // async function handleVideoLibraryChosen({
+  //   videoLibraryId,
+  // }: VideoLibrarySchema) {
+  //   try {
+  //     const videoLibrary = bunnyVideoLibraries.find(
+  //       (item) => item.Id === videoLibraryId,
+  //     )
 
-      if (!videoLibrary) {
-        throw new Error()
-      }
+  //     if (!videoLibrary) {
+  //       throw new Error()
+  //     }
 
-      await setBunnyLibraryAndAPIKey({
-        libraryId: videoLibrary.Id,
-        libraryName: videoLibrary.Name,
-        apiKey: videoLibrary.ApiKey,
-      })
+  //     await setBunnyLibraryAndAPIKey({
+  //       libraryId: videoLibrary.Id,
+  //       libraryName: videoLibrary.Name,
+  //       apiKey: videoLibrary.ApiKey,
+  //     })
 
-      toast.success('Connected to Bunny!', {
-        description: 'You can now start uploading videos.',
-      })
+  //     toast.success('Connected to Bunny!', {
+  //       description: 'You can now start uploading videos.',
+  //     })
 
-      await onBunnyAccountConnected()
+  //     await onBunnyAccountConnected()
 
-      setIsDialogOpen(false)
-    } catch (err) {
-      toast.error('Failed to set Bunny Video Library, please try again.')
-    }
-  }
+  //     setIsDialogOpen(false)
+  //   } catch (err) {
+  //     toast.error('Failed to set Bunny Video Library, please try again.')
+  //   }
+  // }
 
-  const isBunnyVideoLibrariesEmpty = bunnyVideoLibraries.length === 0
+  // const isBunnyVideoLibrariesEmpty = bunnyVideoLibraries.length === 0
 
   return (
     <div className="flex items-center gap-2">
@@ -111,14 +111,14 @@ export function ConnectBunnyAccount({ externalId }: ConnectBunnyAccountProps) {
             </DialogDescription>
           </DialogHeader>
 
-          {isBunnyVideoLibrariesEmpty ? (
+          {/* {isBunnyVideoLibrariesEmpty ? (
             <BunnyApiKeyForm onKeySubmit={handleApiKey} />
           ) : (
             <BunnyVideoLibraryForm
               videoLibraries={bunnyVideoLibraries}
               onVideoLibraryChosen={handleVideoLibraryChosen}
             />
-          )}
+          )} */}
         </DialogContent>
       </Dialog>
 

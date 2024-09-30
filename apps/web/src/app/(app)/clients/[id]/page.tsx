@@ -1,8 +1,8 @@
-import { VideoIcon } from '@radix-ui/react-icons'
-import { Music2 } from 'lucide-react'
+// import { VideoIcon } from '@radix-ui/react-icons'
+// import { Music2 } from 'lucide-react'
 import { Metadata } from 'next'
 
-import { Button } from '@/components/ui/button'
+// import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 import { Overview } from './tabs/overview'

@@ -1,6 +1,6 @@
 'use client'
 
-import { webhookEventTrigger } from '@nivo/drizzle/schema'
+// import { webhookEventTrigger } from '@nivo/drizzle/schema'
 import { Filter, Loader2, X } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { FormEvent, useState, useTransition } from 'react'
@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
-  SelectItem,
+  // SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
@@ -82,13 +82,13 @@ export function WebhookLogsFilters() {
           <SelectValue placeholder="Trigger" />
         </SelectTrigger>
         <SelectContent>
-          {Object.keys(webhookEventTrigger.Values).map((trigger) => {
+          {/* {Object.keys(webhookEventTrigger.Values).map((trigger) => {
             return (
               <SelectItem key={trigger} value={trigger}>
                 {trigger}
               </SelectItem>
             )
-          })}
+          })} */}
         </SelectContent>
       </Select>
 

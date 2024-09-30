@@ -1,5 +1,5 @@
 // import { convertVideoToMP3 } from '@shortify/ffmpeg'
-import axios from 'axios'
+// import axios from 'axios'
 import { Draft, enableMapSet } from 'immer'
 import { atom } from 'jotai'
 import { selectAtom } from 'jotai/utils'
@@ -221,36 +221,32 @@ export const startVideoUploadAtom = atom(
       videoUpload.error = false
     })
 
-    const upload = get(getUploadById(uploadId))
-    const abortController = new AbortController()
+    // const upload = get(getUploadById(uploadId))
+    // const abortController = new AbortController()
 
     try {
-      const { url: uploadUrl } = await nativeClient.requestVideoUploadUrl.query(
-        {
-          videoId: uploadId,
-        },
-      )
-
-      await axios.put(uploadUrl, upload.file, {
-        signal: abortController.signal,
-        headers: {
-          'Content-Type': upload.file.type,
-        },
-        onUploadProgress(progressEvent) {
-          const progress = progressEvent.progress
-            ? Math.round(progressEvent.progress * 100)
-            : 0
-
-          set(videoUploadAtom, (draft) => {
-            const videoUpload = draft.get(uploadId)
-
-            if (!videoUpload) return
-
-            videoUpload.progress = progress
-            videoUpload.isRunning = progress < 100
-          })
-        },
-      })
+      // const { url: uploadUrl } = await nativeClient.requestVideoUploadUrl.query(
+      //   {
+      //     videoId: uploadId,
+      //   },
+      // )
+      // await axios.put(uploadUrl, upload.file, {
+      //   signal: abortController.signal,
+      //   headers: {
+      //     'Content-Type': upload.file.type,
+      //   },
+      //   onUploadProgress(progressEvent) {
+      //     const progress = progressEvent.progress
+      //       ? Math.round(progressEvent.progress * 100)
+      //       : 0
+      //     set(videoUploadAtom, (draft) => {
+      //       const videoUpload = draft.get(uploadId)
+      //       if (!videoUpload) return
+      //       videoUpload.progress = progress
+      //       videoUpload.isRunning = progress < 100
+      //     })
+      //   },
+      // })
     } catch (err) {
       set(videoUploadAtom, (draft) => {
         const videoUpload = draft.get(uploadId)
@@ -279,38 +275,38 @@ export const startAudioUploadAtom = atom(
 
     try {
       const upload = get(getUploadById(uploadId))
-      const abortController = new AbortController()
+      // const abortController = new AbortController()
 
       if (!upload.audioFile) {
         throw new Error(`Audio file not found for upload ${uploadId}.`)
       }
 
-      const { url: uploadUrl } = await nativeClient.requestAudioUploadUrl.query(
-        {
-          videoId: uploadId,
-        },
-      )
+      // const { url: uploadUrl } = await nativeClient.requestAudioUploadUrl.query(
+      //   {
+      //     videoId: uploadId,
+      //   },
+      // )
 
-      await axios.put(uploadUrl, upload.audioFile, {
-        signal: abortController.signal,
-        headers: {
-          'Content-Type': upload.audioFile.type,
-        },
-        onUploadProgress(progressEvent) {
-          const progress = progressEvent.progress
-            ? Math.round(progressEvent.progress * 100)
-            : 0
+      // await axios.put(uploadUrl, upload.audioFile, {
+      //   signal: abortController.signal,
+      //   headers: {
+      //     'Content-Type': upload.audioFile.type,
+      //   },
+      //   onUploadProgress(progressEvent) {
+      //     const progress = progressEvent.progress
+      //       ? Math.round(progressEvent.progress * 100)
+      //       : 0
 
-          set(audioUploadAtom, (draft) => {
-            const audioUpload = draft.get(uploadId)
+      //     set(audioUploadAtom, (draft) => {
+      //       const audioUpload = draft.get(uploadId)
 
-            if (!audioUpload) return
+      //       if (!audioUpload) return
 
-            audioUpload.progress = progress
-            audioUpload.isRunning = progress < 100
-          })
-        },
-      })
+      //       audioUpload.progress = progress
+      //       audioUpload.isRunning = progress < 100
+      //     })
+      //   },
+      // })
     } catch (err) {
       set(audioUploadAtom, (draft) => {
         const audioUpload = draft.get(uploadId)
@@ -338,24 +334,24 @@ export const convertUploadVideoToAudioAtom = atom(
     })
 
     try {
-      const { file } = get(getUploadById(uploadId))
+      // const { file } = get(getUploadById(uploadId))
 
-      const result = await Promise.race<[Promise<File>, Promise<'timeout'>]>([
-        convertVideoToMP3(file, (progress) => {
-          set(audioConversionAtom, (draft) => {
-            const audioConversion = draft.get(uploadId)
+      // const result = await Promise.race<[Promise<File>, Promise<'timeout'>]>([
+      //   convertVideoToMP3(file, (progress) => {
+      //     set(audioConversionAtom, (draft) => {
+      //       const audioConversion = draft.get(uploadId)
 
-            if (!audioConversion) return
+      //       if (!audioConversion) return
 
-            audioConversion.progress = progress
-          })
-        }),
-        new Promise((resolve) => setTimeout(resolve, 50_000, 'timeout')),
-      ])
+      //       audioConversion.progress = progress
+      //     })
+      //   }),
+      //   new Promise((resolve) => setTimeout(resolve, 50_000, 'timeout')),
+      // ])
 
-      if (result === 'timeout') {
-        throw new Error('Audio conversion timeout')
-      }
+      // if (result === 'timeout') {
+      //   throw new Error('Audio conversion timeout')
+      // }
 
       set(audioConversionAtom, (draft) => {
         const audioConversion = draft.get(uploadId)
@@ -365,12 +361,12 @@ export const convertUploadVideoToAudioAtom = atom(
         audioConversion.isRunning = false
       })
 
-      set(
-        uploadsAtom,
-        createUpdateUploadDraft(uploadId, {
-          audioFile: result,
-        }),
-      )
+      // set(
+      //   uploadsAtom,
+      //   createUpdateUploadDraft(uploadId, {
+      //     audioFile: result,
+      //   }),
+      // )
 
       set(startAudioUploadAtom, uploadId)
     } catch (err) {

@@ -47,8 +47,8 @@ interface Purchase {
   purchaseAmount: number
   paymentMethod: string
   purchaseDate: string
-  description: string
-  products: string[]
+  description: string | null
+  products: { id: string; name: string; price: number; quantity: number }[]
 }
 
 export function Purchases() {

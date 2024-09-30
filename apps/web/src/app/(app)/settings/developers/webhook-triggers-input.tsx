@@ -1,57 +1,57 @@
 'use client'
 
-import { Controller, useFormContext } from 'react-hook-form'
+// import { Controller, useFormContext } from 'react-hook-form'
 
-import { Badge } from '@/components/ui/badge'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Label } from '@/components/ui/label'
+// import { Badge } from '@/components/ui/badge'
+// import { Checkbox } from '@/components/ui/checkbox'
+// import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import { Skeleton } from '@/components/ui/skeleton'
-import { trpc } from '@/lib/trpc/react'
+// import { Skeleton } from '@/components/ui/skeleton'
 
-import { CreateWebhookSchema } from './webhook-form'
+// import { trpc } from '@/lib/trpc/react'
+// import { CreateWebhookSchema } from './webhook-form'
 
 export function WebhookTriggersInput() {
-  const { data, isLoading } = trpc.getAvailableTriggers.useQuery()
+  // const { data, isLoading } = trpc.getAvailableTriggers.useQuery()
 
-  const {
-    control,
-    formState: { errors },
-    setValue,
-  } = useFormContext<CreateWebhookSchema>()
+  // const {
+  //   control,
+  //   formState: { errors },
+  //   setValue,
+  // } = useFormContext<CreateWebhookSchema>()
 
-  function handleSelectAllTriggers() {
-    if (!data) {
-      return
-    }
+  // function handleSelectAllTriggers() {
+  //   if (!data) {
+  //     return
+  //   }
 
-    setValue(
-      'triggers',
-      data.triggers.map((item) => item.trigger),
-    )
-  }
+  //   setValue(
+  //     'triggers',
+  //     data.triggers.map((item) => item.trigger),
+  //   )
+  // }
 
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-2 gap-x-3 gap-y-4">
-        {Array.from({ length: 6 }).map((_, i) => {
-          return (
-            <div key={i} className="space-y-2">
-              <Skeleton className="h-5 w-full" />
-              <div className="space-y-1">
-                <Skeleton className="h-3 w-full" />
-                <Skeleton className="h-3 w-20" />
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    )
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="grid grid-cols-2 gap-x-3 gap-y-4">
+  //       {Array.from({ length: 6 }).map((_, i) => {
+  //         return (
+  //           <div key={i} className="space-y-2">
+  //             <Skeleton className="h-5 w-full" />
+  //             <div className="space-y-1">
+  //               <Skeleton className="h-3 w-full" />
+  //               <Skeleton className="h-3 w-20" />
+  //             </div>
+  //           </div>
+  //         )
+  //       })}
+  //     </div>
+  //   )
+  // }
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-x-3 gap-y-4">
+      {/* <div className="grid grid-cols-2 gap-x-3 gap-y-4">
         {data &&
           data.triggers.map(({ trigger, description }) => {
             return (
@@ -87,18 +87,18 @@ export function WebhookTriggersInput() {
               </div>
             )
           })}
-      </div>
-      {errors.triggers && (
+      </div> */}
+      {/* {errors.triggers && (
         <p className="text-sm font-medium text-red-500 dark:text-red-400">
           {errors.triggers.message}
         </p>
-      )}
+      )} */}
       <Separator />
       <p className="text-sm text-muted-foreground">
         Do you want this webhook to{' '}
         <button
           type="button"
-          onClick={handleSelectAllTriggers}
+          // onClick={handleSelectAllTriggers}
           className="bg-transparent underline"
         >
           listen to all events

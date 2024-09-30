@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
 import { MagicWandIcon } from '@radix-ui/react-icons'

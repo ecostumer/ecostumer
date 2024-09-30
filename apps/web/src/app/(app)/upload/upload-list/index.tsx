@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
+// import { useRouter } from 'next/navigation'
 import { FormProvider, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -29,7 +29,7 @@ const uploadsFormSchema = z.object({
 export type UploadsFormSchema = z.infer<typeof uploadsFormSchema>
 
 export function UploadList() {
-  const router = useRouter()
+  // const router = useRouter()
 
   const uploadsForm = useForm<UploadsFormSchema>({
     resolver: zodResolver(uploadsFormSchema),
@@ -40,6 +40,7 @@ export function UploadList() {
   // const { mutateAsync: createUploadBatch } =
   //   trpc.createUploadBatch.useMutation()
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async function handleCreateUploadBatch({ files }: UploadsFormSchema) {
     try {
       // const { batchId } = await createUploadBatch({ files })

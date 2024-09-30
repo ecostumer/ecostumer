@@ -1,53 +1,53 @@
 'use client'
 
-import { dayjs } from '@nivo/dayjs'
-import { webhookEventTrigger } from '@nivo/drizzle/schema'
-import { keepPreviousData } from '@tanstack/react-query'
-import { Loader2 } from 'lucide-react'
-import { useRouter, useSearchParams } from 'next/navigation'
+// import { dayjs } from '@nivo/dayjs'
+// import { webhookEventTrigger } from '@nivo/drizzle/schema'
+// import { keepPreviousData } from '@tanstack/react-query'
+// import { Loader2 } from 'lucide-react'
 
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+// import { useRouter, useSearchParams } from 'next/navigation'
+// import { Badge } from '@/components/ui/badge'
+// import { Button } from '@/components/ui/button'
 import {
   Table,
   TableBody,
-  TableCell,
+  // TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { trpc } from '@/lib/trpc/react'
 
-import { WebhookLogsListLoading } from './webhook-logs-list-loading'
+// import { trpc } from '@/lib/trpc/react'
+// import { WebhookLogsListLoading } from './webhook-logs-list-loading'
 
 export function WebhookLogsList() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
+  // const router = useRouter()
+  // const searchParams = useSearchParams()
 
-  const trigger = searchParams.get('trigger')
-    ? webhookEventTrigger.parse(searchParams.get('trigger'))
-    : undefined
+  // const trigger = searchParams.get('trigger')
+  //   ? webhookEventTrigger.parse(searchParams.get('trigger'))
+  //   : undefined
 
-  const query = searchParams.get('query')
+  // const query = searchParams.get('query')
 
-  const {
-    data,
-    isLoading,
-    isFetching,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = trpc.getCompanyWebhookLogs.useInfiniteQuery(
-    { limit: 15, trigger, query },
-    {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-      placeholderData: keepPreviousData,
-    },
-  )
+  // const {
+  //   data,
+  //   isLoading,
+  //   isFetching,
+  //   fetchNextPage,
+  //   hasNextPage,
+  //   isFetchingNextPage,
+  // } = trpc.getCompanyWebhookLogs.useInfiniteQuery(
+  //   { limit: 15, trigger, query },
+  //   {
+  //     getNextPageParam: (lastPage) => lastPage.nextCursor,
+  //     placeholderData: keepPreviousData,
+  //   },
+  // )
 
-  if (isLoading) {
-    return <WebhookLogsListLoading />
-  }
+  // if (isLoading) {
+  //   return <WebhookLogsListLoading />
+  // }
 
   return (
     <div className="relative">
@@ -58,9 +58,9 @@ export function WebhookLogsList() {
               <TableHead style={{ width: 172 }}>
                 <div className="flex items-center gap-2">
                   Time{' '}
-                  {isFetching && (
+                  {/* {isFetching && (
                     <Loader2 className="size-4 animate-spin text-muted-foreground" />
-                  )}
+                  )} */}
                 </div>
               </TableHead>
               <TableHead style={{ width: 72 }}>Status</TableHead>
@@ -70,7 +70,7 @@ export function WebhookLogsList() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data?.pages?.map((page) => {
+            {/* {data?.pages?.map((page) => {
               return page.companyWebhookLogs.map((webhookLog) => {
                 const webhookUrl = new URL(webhookLog.url)
 
@@ -124,12 +124,12 @@ export function WebhookLogsList() {
                   </TableRow>
                 )
               })
-            })}
+            })} */}
           </TableBody>
         </Table>
       </div>
 
-      {data && hasNextPage && (
+      {/* {data && hasNextPage && (
         <div className="pointer-events-none absolute bottom-0 left-0 right-0 flex items-center justify-center bg-gradient-to-t from-white/40 to-white/0 py-4 dark:from-black/40 dark:to-black/0">
           <Button
             size="sm"
@@ -144,7 +144,7 @@ export function WebhookLogsList() {
             )}
           </Button>
         </div>
-      )}
+      )} */}
     </div>
   )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { Loader2 } from 'lucide-react'
+// import { Loader2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 import useDebounceValue from '@/hooks/useDebounceValue'
@@ -9,11 +9,11 @@ import useDebounceValue from '@/hooks/useDebounceValue'
 import { Button } from '../ui/button'
 import {
   CommandDialog,
-  CommandGroup,
+  // CommandGroup,
   CommandInput,
   CommandList,
 } from '../ui/command'
-import { SearchItem } from './search-item'
+// import { SearchItem } from './search-item'
 
 export function Search() {
   const [open, setOpen] = useState(false)

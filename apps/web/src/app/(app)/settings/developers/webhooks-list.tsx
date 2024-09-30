@@ -1,39 +1,39 @@
 'use client'
 
 import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons'
-import { ClipboardCopy, Globe } from 'lucide-react'
-import dynamic from 'next/dynamic'
+// import { ClipboardCopy, Globe } from 'lucide-react'
+// import dynamic from 'next/dynamic'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback } from 'react'
-import { toast } from 'sonner'
+// import { toast } from 'sonner'
 import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import { Skeleton } from '@/components/ui/skeleton'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
-import { trpc } from '@/lib/trpc/react'
 
+// import { Skeleton } from '@/components/ui/skeleton'
+// import {
+//   Table,
+//   TableBody,
+//   TableCell,
+//   TableHead,
+//   TableHeader,
+//   TableRow,
+// } from '@/components/ui/table'
+// import {
+//   Tooltip,
+//   TooltipContent,
+//   TooltipTrigger,
+// } from '@/components/ui/tooltip'
+// import { trpc } from '@/lib/trpc/react'
 import { CreateWebhook } from './create-webhook'
-import { WebhookListItemActions } from './webhook-list-item-actions'
-import { WebhooksListLoading } from './webhooks-list-loading'
+// import { WebhookListItemActions } from './webhook-list-item-actions'
+// import { WebhooksListLoading } from './webhooks-list-loading'
 
-const WebhookEventsChart = dynamic(() => import('./webhook-events-chart'), {
-  ssr: false,
-})
+// const WebhookEventsChart = dynamic(() => import('./webhook-events-chart'), {
+//   ssr: false,
+// })
 
 export function WebhooksList() {
   const router = useRouter()
@@ -43,9 +43,9 @@ export function WebhooksList() {
     .default(0)
     .parse(searchParams.get('pageIndex'))
 
-  const { data, isLoading } = trpc.getCompanyWebhooks.useQuery({
-    pageIndex,
-  })
+  // const { data, isLoading } = trpc.getCompanyWebhooks.useQuery({
+  //   pageIndex,
+  // })
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -63,16 +63,16 @@ export function WebhooksList() {
     )
   }
 
-  function handleCopySigningKey(signingKey: string) {
-    navigator.clipboard.writeText(signingKey)
+  // function handleCopySigningKey(signingKey: string) {
+  //   navigator.clipboard.writeText(signingKey)
 
-    toast.info('Signing key copied to clipboard!')
-  }
+  //   toast.info('Signing key copied to clipboard!')
+  // }
 
-  const page = pageIndex + 1
+  // const page = pageIndex + 1
 
-  const hasPreviousPage = data ? page > 1 : false
-  const hasNextPage = data ? page < data.pageCount : false
+  // const hasPreviousPage = data ? page > 1 : false
+  // const hasNextPage = data ? page < data.pageCount : false
 
   return (
     <div className="space-y-2">
@@ -86,19 +86,19 @@ export function WebhooksList() {
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          {data ? (
+          {/* {data ? (
             <span className="text-sm text-muted-foreground">
               Page {page} of {data.pageCount}
             </span>
           ) : (
             <Skeleton className="h-5 w-20" />
-          )}
+          )} */}
           <Separator orientation="vertical" className="h-4" />
           <Button
             variant="outline"
             className="size-8 p-0"
             onClick={() => navigateToPage(pageIndex - 1)}
-            disabled={!hasPreviousPage}
+            // disabled={!hasPreviousPage}
           >
             <span className="sr-only">Go to previous page</span>
             <ChevronLeftIcon className="h-4 w-4" />
@@ -107,7 +107,7 @@ export function WebhooksList() {
             variant="outline"
             className="size-8 p-0"
             onClick={() => navigateToPage(pageIndex + 1)}
-            disabled={!hasNextPage}
+            // disabled={!hasNextPage}
           >
             <span className="sr-only">Go to next page</span>
             <ChevronRightIcon className="h-4 w-4" />
@@ -117,7 +117,7 @@ export function WebhooksList() {
         </div>
       </div>
 
-      {isLoading ? (
+      {/* {isLoading ? (
         <WebhooksListLoading />
       ) : (
         <div className="rounded-md border">
@@ -212,7 +212,7 @@ export function WebhooksList() {
             </TableBody>
           </Table>
         </div>
-      )}
+      )} */}
     </div>
   )
 }
