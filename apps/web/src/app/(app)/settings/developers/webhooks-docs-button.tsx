@@ -1,11 +1,11 @@
 import { BookText } from 'lucide-react'
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
+// import {
+//   Accordion,
+//   AccordionContent,
+//   AccordionItem,
+//   AccordionTrigger,
+// } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -15,10 +15,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { serverClient } from '@/lib/trpc/server'
+// import { serverClient } from '@/lib/trpc/server'
 
 export async function WebhookDocsButton() {
-  const { triggers } = await serverClient.getAvailableTriggers()
+  // const { triggers } = await serverClient.getAvailableTriggers()
 
   return (
     <Dialog>
@@ -38,7 +38,7 @@ export async function WebhookDocsButton() {
         </DialogHeader>
 
         <div className="max-h-[400px]">
-          <Accordion type="single" collapsible className="w-full">
+          {/* <Accordion type="single" collapsible className="w-full">
             {triggers.map(({ trigger, description }) => {
               return (
                 <AccordionItem value={trigger} key={trigger}>
@@ -47,7 +47,7 @@ export async function WebhookDocsButton() {
                 </AccordionItem>
               )
             })}
-          </Accordion>
+          </Accordion> */}
         </div>
       </DialogContent>
     </Dialog>
