@@ -1,5 +1,5 @@
-import { env } from '@agender/env'
-import { prisma } from '@agender/prisma'
+import { env } from '@saas/env'
+import { prisma } from '@saas/prisma'
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import Stripe from 'stripe'
