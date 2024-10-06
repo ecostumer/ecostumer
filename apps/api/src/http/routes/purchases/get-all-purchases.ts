@@ -20,8 +20,8 @@ export async function getAllPurchases(app: FastifyInstance) {
           summary: 'Get all purchases for an organization with pagination',
           security: [{ bearerAuth: [] }],
           querystring: z.object({
-            page: z.coerce.number().min(1).default(1),
-            pageSize: z.coerce.number().min(1).max(100).default(10),
+            page: z.coerce.number().min(1),
+            pageSize: z.coerce.number().min(1),
           }),
           params: z.object({
             slug: z.string(),
@@ -47,8 +47,9 @@ export async function getAllPurchases(app: FastifyInstance) {
                 }),
               ),
               totalPages: z.number(),
+              totalCount: z.number(),
               currentPage: z.number(),
-              pageSize: z.number(), // Adicionando pageSize na resposta
+              pageSize: z.number(),
             }),
           },
         },
@@ -128,7 +129,7 @@ export async function getAllPurchases(app: FastifyInstance) {
           purchaseAmount: purchase.purchaseAmount,
           purchaseDate: purchase.purchaseDate,
           description: purchase.description,
-          clientName: purchase.client?.name || 'Unknown',
+          clientName: purchase.client?.name,
           products: purchase.products.map((purchaseProduct) => ({
             id: purchaseProduct.product.id,
             name: purchaseProduct.product.name,
@@ -140,6 +141,7 @@ export async function getAllPurchases(app: FastifyInstance) {
         return reply.status(200).send({
           purchases: purchasesWithClientInfo,
           totalPages,
+          totalCount,
           currentPage: page,
           pageSize,
         })

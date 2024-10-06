@@ -18,8 +18,10 @@ import { createAccount } from './routes/auth/create-account'
 import { getProfile } from './routes/auth/get-profile'
 import { requestPasswordRecover } from './routes/auth/request-password-recover'
 import { resetPassword } from './routes/auth/reset-password'
+import { getOrganizationBilling } from './routes/billing/get-organization-billing'
 import { createClient } from './routes/clients/create-client'
 import { deleteClient } from './routes/clients/delete-client'
+import { getAllClients } from './routes/clients/get-all-clients'
 import { getClient } from './routes/clients/get-client'
 import { getClients } from './routes/clients/get-clients'
 import { updateClient } from './routes/clients/update-client'
@@ -30,6 +32,7 @@ import { getInvites } from './routes/invites/get-invites'
 import { getPendingInvites } from './routes/invites/get-pending-invites'
 import { rejectInvite } from './routes/invites/reject-invite'
 import { revokeInvite } from './routes/invites/revoke-invite'
+import { getMembers } from './routes/members/get-members'
 import { removeMember } from './routes/members/remove-member'
 import { updateMember } from './routes/members/update-member'
 import { getActiveCustomers } from './routes/metrics/get-active-customers'
@@ -111,11 +114,13 @@ app.register(transferOrganization)
 // Clients
 app.register(createClient)
 app.register(deleteClient)
+app.register(getAllClients)
 app.register(getClients)
 app.register(getClient)
 app.register(updateClient)
 
 // Members
+app.register(getMembers)
 app.register(updateMember)
 app.register(removeMember)
 
@@ -136,6 +141,9 @@ app.register(getAllPurchases)
 app.register(getPurchase)
 app.register(getPurchases)
 
+// Billing
+app.register(getOrganizationBilling)
+
 // Metrics
 app.register(getTopServices)
 app.register(getTopClients)
@@ -151,6 +159,6 @@ app.register(deleteProduct)
 
 app.register(fastifyCors)
 
-app.listen({ port: env.SERVER_PORT }).then(() => {
+app.listen({ port: env.PORT, host: '0.0.0.0' }).then(() => {
   console.log('Http server runnig 🚀')
 })

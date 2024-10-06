@@ -1,7 +1,5 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-
 import {
   Card,
   CardContent,
@@ -13,47 +11,7 @@ import {
 import { PurchaseForm } from '../../purchase-form'
 import { PurchaseSummaryCard } from './summary'
 
-interface Product {
-  description: string | null
-  name: string
-  price: number
-  id: string
-  status: boolean
-}
-
-interface OverviewProps {
-  products: Product[]
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function Overview({ products }: OverviewProps) {
-  const [selectedProductsDetails] = useState<Product[]>([])
-  const [totalPrice, setTotalPrice] = useState(0)
-  const [finalPrice, setFinalPrice] = useState(0)
-  const [discountAmount, setDiscountAmount] = useState(0)
-  const [discount] = useState('0')
-
-  useEffect(() => {
-    if (selectedProductsDetails.length > 0) {
-      const total = selectedProductsDetails.reduce(
-        (sum, product) => sum + product.price,
-        0,
-      )
-
-      const discountValue = parseFloat(discount.replace(',', '.')) || 0
-      const discountAmt = total * (discountValue / 100)
-      const final = total - discountAmt
-
-      setTotalPrice(total)
-      setFinalPrice(final)
-      setDiscountAmount(discountAmt)
-    } else {
-      setTotalPrice(0)
-      setFinalPrice(0)
-      setDiscountAmount(0)
-    }
-  }, [selectedProductsDetails, discount])
-
+export function Overview() {
   return (
     <div className="grid flex-1 grid-cols-[1fr_minmax(320px,480px)] gap-4">
       <Card className="self-start">
@@ -66,13 +24,7 @@ export function Overview({ products }: OverviewProps) {
         </CardContent>
       </Card>
 
-      <PurchaseSummaryCard
-        selectedProductsDetails={selectedProductsDetails}
-        totalPrice={totalPrice}
-        discount={discount}
-        discountAmount={discountAmount}
-        finalPrice={finalPrice}
-      />
+      <PurchaseSummaryCard />
     </div>
   )
 }

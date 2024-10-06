@@ -1,12 +1,13 @@
 'use client'
 
+import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { Calendar as CalendarIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useParams } from 'next/navigation'
 
 import StatusAlert from '@/components/alert-status'
-import { ClientAutocomplete } from '@/components/client-input'
+import { AutoComplete, ClientOption } from '@/components/client-input'
 import { ProductInput } from '@/components/product-input'
 import { SubmitButton } from '@/components/submit-button'
 import { Button } from '@/components/ui/button'
@@ -19,7 +20,9 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { Textarea } from '@/components/ui/textarea'
+import { usePurchase } from '@/context/purchase-context'
 import { useFormState } from '@/hooks/use-form-state'
+import { getAllClients } from '@/http/get-all-clients'
 import { cn } from '@/lib/utils'
 
 import { createPurchaseAction } from './actions'
@@ -34,26 +37,57 @@ interface Product {
 }
 
 export function PurchaseForm() {
+  const { slug } = useParams<{ slug: string }>()
+
   const [{ errors, message, success }, handleSubmit, isPending] =
     useFormState(createPurchaseAction)
 
-  const [date, setDate] = useState<Date | undefined>(undefined)
-  const [productsSelected, setProductsSelected] = useState<Product[]>([])
-  const [discountValue, setDiscountValue] = useState<string>('')
+  const {
+    selectedProductsDetails,
+    setSelectedProductsDetails,
+    discount,
+    setDiscount,
+    client,
+    setClient,
+    date,
+    setDate,
+    paymentMethod,
+    setPaymentMethod,
+    observations,
+    setObservations,
+  } = usePurchase()
 
-  const isProductsSelected = productsSelected.length > 0
-
-  useEffect(() => {
-    // Atualize o desconto externamente, se necessário
-  }, [discountValue])
+  const isProductsSelected = selectedProductsDetails.length > 0
 
   const handleProductsSelect = (selectedProducts: Product[]) => {
-    setProductsSelected(selectedProducts)
-    // Passe os produtos selecionados para outros componentes, se necessário
+    setSelectedProductsDetails(selectedProducts)
+  }
+
+  const { data, isLoading } = useQuery({
+    queryKey: [slug, 'clients'],
+    queryFn: () =>
+      getAllClients({
+        slug,
+      }),
+    enabled: !!slug,
+  })
+
+  const clientOptions: ClientOption[] = data?.clients
+    ? data.clients.map((client) => ({
+        id: client.id,
+        name: client.name,
+        avatarUrl: client.author?.avatarUrl || null,
+      }))
+    : []
+
+  const handleClientChange = (selectedOption: ClientOption | null) => {
+    setClient(selectedOption)
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <input type="hidden" name="slug" value={slug} />
+
       <StatusAlert
         message={message}
         success={success}
@@ -65,7 +99,21 @@ export function PurchaseForm() {
         {/* Cliente */}
         <div className="space-y-1 sm:col-span-1">
           <Label htmlFor="client">Cliente</Label>
-          <ClientAutocomplete name="client" error={errors?.client?.[0]} />
+          <AutoComplete
+            name="client"
+            options={clientOptions}
+            value={client}
+            onValueChange={handleClientChange}
+            placeholder="Selecione um cliente"
+            emptyMessage="Nenhum cliente encontrado"
+            isLoading={isLoading}
+            disabled={isLoading}
+          />
+          {errors?.client && (
+            <p className="text-xs font-medium text-red-500 dark:text-red-400">
+              {errors.client[0]}
+            </p>
+          )}
         </div>
 
         {/* Produtos */}
@@ -106,8 +154,8 @@ export function PurchaseForm() {
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
-                selected={date}
-                onSelect={(day) => setDate(day)}
+                selected={date!}
+                onSelect={(day) => setDate(day!)}
                 locale={ptBR}
                 initialFocus
               />
@@ -126,8 +174,8 @@ export function PurchaseForm() {
           <Input
             id="discount"
             name="discount"
-            value={discountValue}
-            onChange={(e) => setDiscountValue(e.target.value)}
+            value={discount}
+            onChange={(e) => setDiscount(e.target.value)}
             placeholder="Digite o desconto em %"
             disabled={!isProductsSelected}
           />
@@ -144,6 +192,8 @@ export function PurchaseForm() {
           <Input
             id="paymentMethod"
             name="paymentMethod"
+            value={paymentMethod}
+            onChange={(e) => setPaymentMethod(e.target.value)}
             placeholder="Ex.: Cartão de Crédito, Pix"
           />
           {errors?.paymentMethod && (
@@ -159,6 +209,8 @@ export function PurchaseForm() {
           <Textarea
             id="observations"
             name="observations"
+            value={observations}
+            onChange={(e) => setObservations(e.target.value)}
             placeholder="Anotações adicionais"
           />
           {errors?.observations && (

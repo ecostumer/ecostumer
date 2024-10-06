@@ -34,14 +34,13 @@ export async function getPurchases({
 
   const result = await api
     .get(`organizations/${slug}/purchases`, {
+      next: { tags: ['purchases'] },
       searchParams: {
         page,
         pageSize,
       },
     })
     .json<GetPurchasesResponse>()
-
-  console.log(result)
 
   return result
 }

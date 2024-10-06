@@ -1,5 +1,3 @@
-import { getCookie } from 'cookies-next'
-
 import { api } from './api-client'
 
 interface CreateProductsRequest {
@@ -8,19 +6,15 @@ interface CreateProductsRequest {
     name: string
     price: number
   }
+  slug: string
 }
 
 type CreateProductsResponse = void
 
 export async function createProducts({
   product,
+  slug,
 }: CreateProductsRequest): Promise<CreateProductsResponse> {
-  const slug = getCookie('org')
-
-  if (!slug) {
-    throw new Error('Organização não encontrada no cookie.')
-  }
-
   const { name, description, price } = product
 
   await api.post(`organizations/${slug}/products`, {

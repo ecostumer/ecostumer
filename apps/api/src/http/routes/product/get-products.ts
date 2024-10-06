@@ -14,16 +14,19 @@ export async function getProducts(app: FastifyInstance) {
       {
         schema: {
           tags: ['Products'],
-          summary: 'List Products',
+          summary: 'List Products with Pagination',
           security: [{ bearerAuth: [] }],
           params: z.object({
             slug: z.string(),
           }),
           querystring: z.object({
-            search: z.string().optional(), // Param de busca
-            status: z.boolean().optional(), // Filtrar por status (ativo/inativo)
-            minPrice: z.number().optional(), // Filtrar por preço mínimo
-            maxPrice: z.number().optional(), // Filtrar por preço máximo
+            pageIndex: z.coerce.number().min(0).default(0),
+            pageSize: z.coerce.number().min(1).max(100).default(10),
+            searchTerm: z.string().default(''),
+            search: z.string().optional(),
+            status: z.boolean().optional(),
+            minPrice: z.number().optional(),
+            maxPrice: z.number().optional(),
           }),
           response: {
             200: z.object({
@@ -36,18 +39,21 @@ export async function getProducts(app: FastifyInstance) {
                   price: z.number(),
                 }),
               ),
+              totalCount: z.number(),
+              totalPages: z.number(),
+              currentPage: z.number(),
+              pageSize: z.number(),
             }),
           },
         },
       },
       async (request, reply) => {
         const { slug } = request.params
-        const { search, status, minPrice, maxPrice } = request.query
+        const { pageIndex, pageSize, searchTerm, status, minPrice, maxPrice } =
+          request.query
 
-        // Obter a organização do usuário logado
         const { organization } = await request.getUserMembership(slug)
 
-        // Tipar o objeto `whereClause` explicitamente
         const whereClause: {
           organizationId: string
           name?: { contains: string; mode: 'insensitive' }
@@ -58,9 +64,9 @@ export async function getProducts(app: FastifyInstance) {
         }
 
         // Aplicar filtros dinamicamente
-        if (search) {
+        if (searchTerm) {
           whereClause.name = {
-            contains: search,
+            contains: searchTerm,
             mode: 'insensitive',
           }
         }
@@ -76,12 +82,31 @@ export async function getProducts(app: FastifyInstance) {
           }
         }
 
-        // Consultar produtos com os filtros aplicados
-        const products = await prisma.product.findMany({
+        // Consultar o número total de produtos
+        const totalCount = await prisma.product.count({
           where: whereClause,
         })
 
-        return reply.status(200).send({ products })
+        // Consultar produtos com paginação e filtros aplicados
+        const products = await prisma.product.findMany({
+          where: whereClause,
+          skip: pageIndex * pageSize, // Pular produtos para a página atual
+          take: pageSize, // Limitar ao tamanho da página
+          orderBy: {
+            createdAt: 'desc', // Ordenar por data de criação
+          },
+        })
+
+        // Calcular o número total de páginas
+        const totalPages = Math.ceil(totalCount / pageSize)
+
+        return reply.status(200).send({
+          products,
+          totalCount,
+          totalPages,
+          currentPage: pageIndex,
+          pageSize,
+        })
       },
     )
 }

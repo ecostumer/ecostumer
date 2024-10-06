@@ -1,11 +1,13 @@
 'use client'
 
 import { Pencil2Icon } from '@radix-ui/react-icons'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, MoreHorizontal, Trash2 } from 'lucide-react'
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
-// import { toast } from 'sonner'
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -24,32 +26,35 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-// import { deleteCustomer } from '@/http/delete-customer'
+import { deleteCustomer } from '@/http/delete-customer'
 
 interface CustomerItemActionsProps {
   customerId: string
 }
 
 export function CustomerItemActions({ customerId }: CustomerItemActionsProps) {
+  const { slug } = useParams<{ slug: string }>()
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
-  const isDeletingCustomer = false
+  const queryClient = useQueryClient()
 
-  // const { mutate: handleDeleteCustomer, isLoading: isDeletingCustomer } =
-  //   useMutation(async () => await deleteCustomer({ clientId: customerId }), {
-  //     onSuccess: () => {
-  //       setIsDeleteDialogOpen(false)
-  //       toast.success('Customer deleted successfully.')
-  //       // Invalida queries relacionadas a clientes para refetch
-  //       queryClient.invalidateQueries(['customers'])
-  //     },
-  //     onError: () => {
-  //       toast.error('Uh oh! Something went wrong.', {
-  //         description:
-  //           'An error occurred while trying to delete the customer. If the error persists, please contact an administrator.',
-  //       })
-  //     },
-  //   })
+  const { mutate: handleDeleteCustomer, isPending: isDeletingCustomer } =
+    useMutation({
+      mutationFn: () => deleteCustomer({ clientId: customerId, slug }),
+      onSuccess: () => {
+        setIsDeleteDialogOpen(false)
+        toast.success('Cliente deletado com sucesso.')
+        queryClient.invalidateQueries({
+          queryKey: [slug, 'products'],
+        })
+      },
+      onError: () => {
+        toast.error('Algo deu errado ao tentar deletar o cliente.', {
+          description:
+            'Ocorreu um erro ao tentar deletar o cliente. Se o erro persistir, entre em contato com o administrador.',
+        })
+      },
+    })
 
   return (
     <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

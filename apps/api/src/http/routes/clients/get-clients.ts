@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client'
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import z from 'zod'
@@ -17,10 +18,16 @@ export async function getClients(app: FastifyInstance) {
       {
         schema: {
           tags: ['Clients'],
-          summary: 'Get all organization clients',
+          summary:
+            'Obter todos os clientes da organização com paginação e busca',
           security: [{ bearerAuth: [] }],
           params: z.object({
             slug: z.string(),
+          }),
+          querystring: z.object({
+            pageIndex: z.coerce.number().min(0).default(0),
+            pageSize: z.coerce.number().min(1).max(100).default(10),
+            titleFilter: z.string().optional(),
           }),
           response: {
             200: z.object({
@@ -47,27 +54,43 @@ export async function getClients(app: FastifyInstance) {
                     .nullable(),
                 }),
               ),
+              totalCount: z.number(),
+              totalPages: z.number(),
+              currentPage: z.number(),
+              pageSize: z.number(),
             }),
           },
         },
       },
       async (request, reply) => {
         const { slug } = request.params
+        const { pageIndex, pageSize, titleFilter } = request.query
 
         const { organization, membership } =
           await request.getUserMembership(slug)
-
         const { cannot } = getUserPermissions(
           membership.userId,
           membership.role,
         )
+
         if (cannot('get', 'Client')) {
           throw new UnauthorizedError(
-            'You do not have permission to view clients.',
+            'Você não tem permissão para visualizar clientes.',
           )
         }
 
-        // Inclui o author (id, name, email, avatarUrl) no select
+        const whereClause: Prisma.ClientWhereInput = {
+          organizationId: organization.id,
+          ...(titleFilter && {
+            name: {
+              contains: titleFilter,
+              mode: Prisma.QueryMode.insensitive,
+            },
+          }),
+        }
+
+        const totalCount = await prisma.client.count({ where: whereClause })
+
         const clients = await prisma.client.findMany({
           select: {
             createdAt: true,
@@ -90,15 +113,23 @@ export async function getClients(app: FastifyInstance) {
               },
             },
           },
-          where: {
-            organizationId: organization.id,
-          },
+          where: whereClause,
           orderBy: {
             createdAt: 'desc',
           },
+          skip: pageIndex * pageSize,
+          take: pageSize,
         })
 
-        return reply.status(200).send({ clients })
+        const totalPages = Math.ceil(totalCount / pageSize)
+
+        return reply.status(200).send({
+          clients,
+          totalCount,
+          totalPages,
+          currentPage: pageIndex + 1,
+          pageSize,
+        })
       },
     )
 }

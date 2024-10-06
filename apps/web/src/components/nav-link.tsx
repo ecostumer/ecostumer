@@ -9,12 +9,12 @@ export type NavLinkProps = ComponentProps<typeof Link> & {
 }
 
 export function NavLink({ shouldMatchExact = false, ...props }: NavLinkProps) {
-  const pathName = usePathname()
+  const pathname = usePathname()
 
   const isCurrent =
     props.href === '/' || shouldMatchExact
-      ? pathName === props.href
-      : pathName.startsWith(props.href.toString())
+      ? pathname === props.href
+      : pathname.startsWith(props.href.toString())
 
   return <Link {...props} prefetch={false} data-current={isCurrent} />
 }

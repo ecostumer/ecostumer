@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server'
 
+import { revalidateTag } from 'next/cache'
 import { z } from 'zod'
 
+import { getCurrentOrg } from '@/auth/auth'
 import { createPurchase } from '@/http/create-purchase'
 
 const purchaseSchema = z.object({
   client: z.string().uuid({ message: 'Cliente inválido ou não selecionado.' }),
-  date: z.string().refine((value) => !isNaN(Date.parse(value)), {
-    message: 'Por favor, insira uma data válida.',
-  }),
+  date: z.coerce.string().min(1),
   discount: z
     .string()
     .optional()
@@ -24,8 +24,9 @@ const purchaseSchema = z.object({
 })
 
 export async function createPurchaseAction(data: FormData) {
-  // Extrair campos simples
   const formDataEntries = Object.fromEntries(data)
+
+  console.log(formDataEntries)
   const result = purchaseSchema.safeParse(formDataEntries)
 
   if (!result.success) {
@@ -91,6 +92,7 @@ export async function createPurchaseAction(data: FormData) {
     // Aplicar o desconto
     const finalPrice = totalPrice - (totalPrice * discount) / 100
 
+    revalidateTag('purchase')
     await createPurchase({
       purchase: {
         description: observations || '',
@@ -105,6 +107,7 @@ export async function createPurchaseAction(data: FormData) {
         purchaseAmount: finalPrice,
         clientId: client,
       },
+      slug: getCurrentOrg()!,
     })
   } catch (err) {
     console.error(err)

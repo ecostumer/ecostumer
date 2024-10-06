@@ -1,36 +1,57 @@
 import { api } from './api-client'
 
 interface GetClientsRequest {
-  slug: string | null
+  slug: string
+  pageIndex?: number
+  pageSize?: number
+  titleFilter?: string
 }
 
-interface Author {
-  id: string
-  name: string | null
-  email: string | null
-  avatarUrl: string | null
-}
-
-interface GetClientsResponse {
+export interface GetClientsResponse {
   clients: {
     id: string
     name: string
+    active: boolean | null
     email: string | null
-    active: boolean
     phoneNumber: string
-    birthday: Date | null
+    birthday: string | null
     street: string | null
     complement: string | null
     city: string | null
     state: string | null
-    author: Author | null
     createdAt: string
+    author: {
+      id: string
+      name: string | null
+      email: string | null
+      avatarUrl: string | null
+    } | null
   }[]
+  totalCount: number
+  totalPages: number
 }
 
-export async function getClients({ slug }: GetClientsRequest) {
+export async function getClients({
+  slug,
+  pageIndex = 1,
+  pageSize = 10,
+  titleFilter = '',
+}: GetClientsRequest): Promise<GetClientsResponse> {
+  if (!slug) {
+    throw new Error('Slug is required to fetch clients.')
+  }
+
   const result = await api
-    .get(`organizations/${slug}/clients`)
+    .get(`organizations/${slug}/clients`, {
+      next: {
+        tags: ['clients'],
+      },
+      searchParams: {
+        pageIndex,
+        pageSize,
+        ...(titleFilter && { titleFilter }),
+      },
+    })
     .json<GetClientsResponse>()
 
   return result

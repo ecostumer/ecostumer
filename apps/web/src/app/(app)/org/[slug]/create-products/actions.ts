@@ -3,6 +3,9 @@
 import { HTTPError } from 'ky'
 import { z } from 'zod'
 
+import { getCurrentOrg } from '@/auth/auth'
+import { createProducts } from '@/http/create-products'
+
 const productSchema = z.object({
   name: z.string().min(1, { message: 'Por favor, forneça um nome válido.' }),
   description: z
@@ -22,10 +25,17 @@ export async function createProductAction(data: FormData) {
     return { success: false, message: null, errors }
   }
 
-  const objData = result.data
+  const { name, price, description } = result.data
 
   try {
-    console.log(objData)
+    await createProducts({
+      slug: getCurrentOrg()!,
+      product: {
+        name,
+        price,
+        description,
+      },
+    })
   } catch (err) {
     if (err instanceof HTTPError) {
       const { message } = await err.response.json()
@@ -37,14 +47,14 @@ export async function createProductAction(data: FormData) {
 
     return {
       success: false,
-      message: 'Unexpected error, try again in a few minutes.',
+      message: 'Erro inesperado, tente novamente em alguns minutos.',
       errors: null,
     }
   }
 
   return {
     success: true,
-    message: 'Successfully saved the product.',
+    message: 'Produto salvo com sucesso.',
     errors: null,
   }
 }

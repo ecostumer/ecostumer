@@ -6,7 +6,7 @@ import {
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
 } from '@radix-ui/react-icons'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useCallback } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -30,6 +30,7 @@ export function ProductsPagination({
   pageIndex,
 }: ProductsPaginationProps) {
   const router = useRouter()
+  const { slug } = useParams<{ slug: string }>()
   const searchParams = useSearchParams()
 
   const createQueryString = useCallback(
@@ -44,12 +45,14 @@ export function ProductsPagination({
 
   function navigateToPage(pageIndex: number) {
     router.push(
-      `/products?${createQueryString('pageIndex', String(pageIndex))}`,
+      `/org/${slug}/products?${createQueryString('pageIndex', String(pageIndex))}`,
     )
   }
 
   function setPageSize(pageSize: string) {
-    router.push(`/products?${createQueryString('pageSize', pageSize)}`)
+    router.push(
+      `/org/${slug}/products?${createQueryString('pageSize', pageSize)}`,
+    )
   }
 
   const page = pageIndex + 1
@@ -60,7 +63,7 @@ export function ProductsPagination({
     <div className="flex items-center justify-end">
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
-          <p className="text-sm font-medium">Rows per page</p>
+          <p className="text-sm font-medium">Linhas por página</p>
           <Select value={`${pageSize}`} onValueChange={setPageSize}>
             <SelectTrigger className="h-8 w-[70px]">
               <SelectValue placeholder="10" />
@@ -75,7 +78,7 @@ export function ProductsPagination({
           </Select>
         </div>
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-          Page {page} of {pageCount}
+          Página {page} de {pageCount}
         </div>
         <div className="flex items-center space-x-2">
           <Button
@@ -84,7 +87,7 @@ export function ProductsPagination({
             onClick={() => navigateToPage(0)}
             disabled={!hasPreviousPage}
           >
-            <span className="sr-only">Go to first page</span>
+            <span className="sr-only">Ir para a primeira página</span>
             <DoubleArrowLeftIcon className="h-4 w-4" />
           </Button>
           <Button
@@ -93,7 +96,7 @@ export function ProductsPagination({
             onClick={() => navigateToPage(pageIndex - 1)}
             disabled={!hasPreviousPage}
           >
-            <span className="sr-only">Go to previous page</span>
+            <span className="sr-only">Ir para a página anterior</span>
             <ChevronLeftIcon className="h-4 w-4" />
           </Button>
           <Button
@@ -102,7 +105,7 @@ export function ProductsPagination({
             onClick={() => navigateToPage(pageIndex + 1)}
             disabled={!hasNextPage}
           >
-            <span className="sr-only">Go to next page</span>
+            <span className="sr-only">Ir para a próxima página</span>
             <ChevronRightIcon className="h-4 w-4" />
           </Button>
           <Button
@@ -111,7 +114,7 @@ export function ProductsPagination({
             onClick={() => navigateToPage(pageCount - 1)}
             disabled={!hasNextPage}
           >
-            <span className="sr-only">Go to last page</span>
+            <span className="sr-only">Ir para a última página</span>
             <DoubleArrowRightIcon className="h-4 w-4" />
           </Button>
         </div>

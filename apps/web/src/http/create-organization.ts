@@ -1,3 +1,5 @@
+import { revalidateTag } from 'next/cache'
+
 import { api } from './api-client'
 
 interface CreateOrganizationRequest {
@@ -13,6 +15,8 @@ export async function createOrganization({
   domain,
   shouldAttachUsersByDomain,
 }: CreateOrganizationRequest): Promise<CreateOrganizationResponse> {
+  revalidateTag('organizations')
+
   await api.post('organizations', {
     json: {
       name,

@@ -1,6 +1,7 @@
 import './globals.css'
 
 import type { Metadata } from 'next'
+import { Toaster } from 'sonner'
 
 import { Providers } from './providers'
 
@@ -16,6 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
+        <Toaster />
         <Providers>{children}</Providers>
       </body>
     </html>

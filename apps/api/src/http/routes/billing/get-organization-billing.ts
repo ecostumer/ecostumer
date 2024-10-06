@@ -30,7 +30,7 @@ export async function getOrganizationBilling(app: FastifyInstance) {
                   unit: z.number(),
                   price: z.number(),
                 }),
-                projects: z.object({
+                clients: z.object({
                   amount: z.number(),
                   unit: z.number(),
                   price: z.number(),
@@ -55,7 +55,7 @@ export async function getOrganizationBilling(app: FastifyInstance) {
           )
         }
 
-        const [amountOfMembers, amountOfProjects] = await Promise.all([
+        const [amountOfMembers, amountOfClients] = await Promise.all([
           prisma.member.count({
             where: {
               organizationId: organization.id,
@@ -68,7 +68,6 @@ export async function getOrganizationBilling(app: FastifyInstance) {
             },
           }),
         ])
-
         return {
           billing: {
             seats: {
@@ -76,12 +75,12 @@ export async function getOrganizationBilling(app: FastifyInstance) {
               unit: 10,
               price: amountOfMembers * 10,
             },
-            projects: {
-              amount: amountOfProjects,
+            clients: {
+              amount: amountOfClients,
               unit: 20,
-              price: amountOfProjects * 20,
+              price: amountOfClients * 20,
             },
-            total: amountOfMembers * 10 + amountOfProjects * 20,
+            total: amountOfMembers * 10 + amountOfClients * 20,
           },
         }
       },

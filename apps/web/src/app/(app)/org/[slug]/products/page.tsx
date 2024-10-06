@@ -1,7 +1,13 @@
-import Link from 'next/link'
+'use client'
 
-import { getCurrentOrg } from '@/auth/auth'
-import { CustomerItemActions } from '@/components/customer-item-actions'
+import { useQuery } from '@tanstack/react-query'
+import { Loader2 } from 'lucide-react'
+import Link from 'next/link'
+import { useParams } from 'next/navigation'
+import { Suspense } from 'react'
+import { z } from 'zod'
+
+import { ProductItemActions } from '@/app/(app)/org/[slug]/products/product-item-actions'
 import { Badge } from '@/components/ui/badge'
 import {
   Table,
@@ -14,96 +20,107 @@ import {
 import { getProducts } from '@/http/get-products'
 import { formatCurrency } from '@/utils/format-currency'
 
-export default async function ProductsPage() {
-  const slug = getCurrentOrg()
-  const { products } = await getProducts({ slug })
+import { ProductsPagination } from './products-pagination'
+
+const productsPageSearchParams = z.object({
+  pageIndex: z.coerce.number().default(0),
+  pageSize: z.coerce.number().default(10),
+  titleFilter: z.string().default(''),
+})
+
+type ProductsPageSearchParams = z.infer<typeof productsPageSearchParams>
+
+export default function ProductsPage({
+  searchParams,
+}: {
+  searchParams: ProductsPageSearchParams
+}) {
+  const { pageIndex, pageSize, titleFilter } =
+    productsPageSearchParams.parse(searchParams)
+
+  const { slug } = useParams<{ slug: string }>()
+
+  const { data, isLoading } = useQuery({
+    queryKey: [pageIndex, pageSize, titleFilter, slug, 'products'],
+    queryFn: () =>
+      getProducts({ slug, pageIndex, pageSize, searchTerm: titleFilter }),
+    enabled: !!slug,
+  })
+
+  const pageCount = data?.totalPages || 1
 
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Produto</TableHead>
-            <TableHead style={{ width: 100 }}>Status</TableHead>
-            <TableHead style={{ width: 154 }}>Preço</TableHead>
-            <TableHead style={{ width: 220 }} />
-          </TableRow>
-        </TableHeader>
+    <>
+      <div className="rounded-md border">
+        {isLoading ? (
+          <div className="flex h-24 items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Produto</TableHead>
+                <TableHead style={{ width: 100 }}>Status</TableHead>
+                <TableHead style={{ width: 154 }}>Preço</TableHead>
+                <TableHead style={{ width: 220 }} />
+              </TableRow>
+            </TableHeader>
 
-        <TableBody>
-          {products && products.length > 0 ? (
-            products.map((product) => {
-              return (
-                <TableRow
-                  key={product.id}
-                  className="has-[a:focus-visible]:bg-muted"
-                >
-                  <TableCell>
-                    <div className="flex flex-col">
-                      <Link
-                        href={`/products/${product.id}`}
-                        prefetch={false}
-                        className="font-medium text-primary outline-none hover:underline"
-                      >
-                        {product.name}
-                      </Link>
+            <TableBody>
+              {data?.products && data?.products.length > 0 ? (
+                data?.products.map((product) => {
+                  return (
+                    <TableRow
+                      key={product.id}
+                      className="has-[a:focus-visible]:bg-muted"
+                    >
+                      <TableCell>
+                        <div className="flex flex-col">
+                          <Link
+                            href={`/products/${product.id}`}
+                            prefetch={false}
+                            className="font-medium text-primary outline-none hover:underline"
+                          >
+                            {product.name}
+                          </Link>
 
-                      <span className="text-xs text-muted-foreground">
-                        {product.description}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    <Badge>{product.status ? 'Ativo' : 'Inativo'}</Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatCurrency(product.price)}
-                  </TableCell>
-                  {/* <TableCell>
-                    <div className="flex items-center gap-1 text-muted-foreground">
-                      <time title={product.createdAt.toLocaleString()}>
-                        {dayjs(product.createdAt).fromNow()}
-                      </time>
-                      {product.author?.avatarUrl && (
-                        <TooltipProvider>
-                          <Tooltip>
-                            <div className="flex items-center gap-2">
-                              <span>por</span>
-                              <TooltipTrigger asChild>
-                                <Image
-                                  src={product.author?.avatarUrl}
-                                  className="size-5 rounded-full"
-                                  width={20}
-                                  height={20}
-                                  alt=""
-                                />
-                              </TooltipTrigger>
-                              {product.author?.name && (
-                                <TooltipContent>
-                                  {product.author?.name}
-                                </TooltipContent>
-                              )}
-                            </div>
-                          </Tooltip>
-                        </TooltipProvider>
-                      )}
-                    </div>
-                  </TableCell> */}
-                  <TableCell>
-                    <CustomerItemActions customerId={product.id} />
+                          <span className="text-xs text-muted-foreground">
+                            {product.description}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        <Badge>{product.status ? 'Ativo' : 'Inativo'}</Badge>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {formatCurrency(product.price)}
+                      </TableCell>
+                      <TableCell>
+                        <ProductItemActions productId={product.id} />
+                      </TableCell>
+                    </TableRow>
+                  )
+                })
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={7} className="h-24 text-center">
+                    Sem resultados.
                   </TableCell>
                 </TableRow>
-              )
-            })
-          ) : (
-            <TableRow>
-              <TableCell colSpan={7} className="h-24 text-center">
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </div>
+              )}
+            </TableBody>
+          </Table>
+        )}
+      </div>
+
+      <Suspense fallback={null}>
+        <ProductsPagination
+          pageCount={pageCount}
+          pageIndex={pageIndex}
+          pageSize={pageSize}
+        />
+      </Suspense>
+    </>
   )
 }

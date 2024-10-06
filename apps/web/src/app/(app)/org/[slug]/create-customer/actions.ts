@@ -64,14 +64,14 @@ export async function createCustomerAction(data: FormData) {
 
     return {
       success: false,
-      message: 'Unexpected error, try again in a few minutes.',
+      message: 'Erro inesperado, tente novamente em alguns minutos.',
       errors: null,
     }
   }
 
   return {
     success: true,
-    message: 'Successfully saved the customer.',
+    message: 'Cliente salvo com sucesso.',
     errors: null,
   }
 }

@@ -1,18 +1,16 @@
-import { getCookie } from 'cookies-next'
-
 import { api } from './api-client'
 
 interface DeleteCustomerRequest {
   clientId: string
+  slug: string
 }
 
 type DeleteCustomerResponse = void
 
 export async function deleteCustomer({
   clientId,
+  slug,
 }: DeleteCustomerRequest): Promise<DeleteCustomerResponse> {
-  const slug = getCookie('org')
-
   if (!slug) {
     throw new Error('Organização não encontrada no cookie.')
   }

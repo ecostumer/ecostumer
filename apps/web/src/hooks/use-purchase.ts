@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react'
 
-interface Product {
-  id: string
-  name: string
-  price: number
-}
+import type { PurchaseContextType } from '@/@types/types'
+import type { Product } from '@/components/product-input'
 
-export function usePurchase() {
+export function usePurchase(): PurchaseContextType {
   const [selectedProductsDetails, setSelectedProductsDetails] = useState<
     Product[]
   >([])

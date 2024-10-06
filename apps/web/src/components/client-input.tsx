@@ -1,152 +1,172 @@
-'use client'
+import { Command as CommandPrimitive } from 'cmdk'
+import { Check, User } from 'lucide-react'
+import Image from 'next/image'
+import { type KeyboardEvent, useCallback, useRef, useState } from 'react'
 
-import { useQuery } from '@tanstack/react-query'
-import { getCookie } from 'cookies-next'
-import { Loader2 } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
-
-import useDebounceValue from '@/hooks/useDebounceValue'
-import { getClients } from '@/http/get-clients'
-
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import { cn } from '../lib/utils'
 import {
-  Command,
-  CommandEmpty,
   CommandGroup,
+  CommandInput,
   CommandItem,
   CommandList,
 } from './ui/command'
-import { Input } from './ui/input'
-import { ScrollArea } from './ui/scroll-area'
+import { Skeleton } from './ui/skeleton'
 
-interface Client {
+export interface ClientOption {
   id: string
   name: string
-  avatarUrl?: string
+  avatarUrl: string | null
 }
 
-interface ClientAutocompleteProps {
+type AutoCompleteProps = {
   name: string
-  error?: string
+  options: ClientOption[]
+  emptyMessage: string
+  value?: ClientOption | null
+  onValueChange?: (value: ClientOption | null) => void
+  isLoading?: boolean
+  disabled?: boolean
+  placeholder?: string
 }
 
-export function ClientAutocomplete({ name, error }: ClientAutocompleteProps) {
-  const [open, setOpen] = useState(false)
-  const [search, setSearch] = useState('')
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null)
-
-  const debouncedSearch = useDebounceValue(search, 300)
+export const AutoComplete = ({
+  name,
+  options,
+  placeholder,
+  emptyMessage,
+  value,
+  onValueChange,
+  disabled,
+  isLoading = false,
+}: AutoCompleteProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
 
-  const slug = getCookie('org') ?? ''
+  const [isOpen, setOpen] = useState(false)
+  const [selected, setSelected] = useState<ClientOption | null>(value || null)
+  const [inputValue, setInputValue] = useState<string>(value?.name || '')
 
-  const fetchClients = async (searchTerm: string) => {
-    const { clients } = await getClients({ slug })
-
-    return clients.filter((client) =>
-      client.name.toLowerCase().includes(searchTerm.toLowerCase()),
-    )
-  }
-
-  const {
-    data: clients = [],
-    isLoading,
-    isFetching,
-  } = useQuery({
-    queryKey: ['clients', debouncedSearch],
-    queryFn: () => fetchClients(debouncedSearch),
-    staleTime: 5 * 60 * 1000, // 5 minutos
-  })
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false)
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLDivElement>) => {
+      const input = inputRef.current
+      if (!input) {
+        return
       }
-    }
 
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [])
+      if (!isOpen) {
+        setOpen(true)
+      }
 
-  function handleSelect(client: Client) {
-    setSearch(client.name)
-    setSelectedClient(client)
+      if (event.key === 'Enter' && input.value !== '') {
+        const optionToSelect = options.find(
+          (option) => option.name.toLowerCase() === input.value.toLowerCase(),
+        )
+        if (optionToSelect) {
+          setSelected(optionToSelect)
+          onValueChange?.(optionToSelect)
+        }
+      }
+
+      if (event.key === 'Escape') {
+        input.blur()
+      }
+    },
+    [isOpen, options, onValueChange],
+  )
+
+  const handleBlur = useCallback(() => {
     setOpen(false)
-  }
+    setInputValue(selected?.name || '')
+  }, [selected])
+
+  const handleSelectOption = useCallback(
+    (selectedOption: ClientOption) => {
+      setInputValue(selectedOption.name)
+      setSelected(selectedOption)
+      onValueChange?.(selectedOption)
+
+      setTimeout(() => {
+        inputRef?.current?.blur()
+      }, 0)
+    },
+    [onValueChange],
+  )
 
   return (
-    <div className="relative w-full" ref={containerRef}>
-      <Input
-        ref={inputRef}
-        placeholder="Digite o nome do cliente..."
-        value={search}
-        onChange={(e) => {
-          setSearch(e.target.value)
-          setOpen(true)
-          if (selectedClient) {
-            setSelectedClient(null)
-          }
-        }}
-        onFocus={() => {
-          setOpen(true)
-        }}
-        className="w-full"
-      />
-      {/* Campo oculto para o ID do cliente selecionado */}
-      <input type="hidden" name={name} value={selectedClient?.id || ''} />
-      {open && (
-        <div className="absolute z-10 mt-1 w-full rounded-md border border-gray-200 bg-white shadow-lg">
-          <Command>
-            {isFetching && (
-              <div className="flex items-center gap-2 p-2 text-sm text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span>Carregando...</span>
-              </div>
-            )}
-            <CommandList>
-              {!isLoading && clients.length > 0 ? (
-                <ScrollArea className="max-h-60">
-                  <CommandGroup className="p-1.5">
-                    {clients.map((client) => (
-                      <CommandItem
-                        key={client.id}
-                        onSelect={() => handleSelect(client)}
-                      >
-                        <Avatar className="mr-2 h-6 w-6">
-                          {client.author?.avatarUrl ? (
-                            <AvatarImage src={client.author.avatarUrl} />
-                          ) : (
-                            <AvatarFallback>
-                              {client.name.charAt(0)}
-                            </AvatarFallback>
-                          )}
-                        </Avatar>
-                        {client.name}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </ScrollArea>
-              ) : (
-                !isFetching && (
-                  <CommandEmpty>Nenhum cliente encontrado.</CommandEmpty>
-                )
-              )}
-            </CommandList>
-          </Command>
+    <>
+      <input type="hidden" name={name} value={value?.id} />
+      <CommandPrimitive onKeyDown={handleKeyDown}>
+        <div>
+          <CommandInput
+            ref={inputRef}
+            value={inputValue}
+            onValueChange={isLoading ? undefined : setInputValue}
+            onBlur={handleBlur}
+            onFocus={() => setOpen(true)}
+            placeholder={placeholder}
+            disabled={disabled}
+            className="text-base"
+          />
         </div>
-      )}
-      {error && (
-        <p className="text-xs font-medium text-red-500 dark:text-red-400">
-          {error}
-        </p>
-      )}
-    </div>
+        <div className="relative mt-1">
+          <div
+            className={cn(
+              'absolute top-0 z-10 w-full rounded-xl bg-white outline-none animate-in fade-in-0 zoom-in-95',
+              isOpen ? 'block' : 'hidden',
+            )}
+          >
+            <CommandList className="rounded-lg ring-1 ring-slate-200">
+              {isLoading ? (
+                <CommandPrimitive.Loading>
+                  <div className="p-1">
+                    <Skeleton className="h-8 w-full" />
+                  </div>
+                </CommandPrimitive.Loading>
+              ) : null}
+              {options.length > 0 && !isLoading ? (
+                <CommandGroup>
+                  {options.map((option) => {
+                    const isSelected = selected?.id === option.id
+                    return (
+                      <CommandItem
+                        key={option.id}
+                        value={option.name}
+                        onMouseDown={(event) => {
+                          event.preventDefault()
+                          event.stopPropagation()
+                        }}
+                        onSelect={() => handleSelectOption(option)}
+                        className={cn(
+                          'flex w-full items-center gap-2',
+                          !isSelected ? 'pl-8' : null,
+                        )}
+                      >
+                        {isSelected ? <Check className="w-4" /> : null}
+                        {option.avatarUrl ? (
+                          <Image
+                            src={option.avatarUrl}
+                            alt={option.name}
+                            width={24}
+                            height={24}
+                            className="rounded-full"
+                          />
+                        ) : (
+                          <User className="h-6 w-6 rounded-full bg-gray-200 p-1" />
+                        )}
+                        {option.name}
+                      </CommandItem>
+                    )
+                  })}
+                </CommandGroup>
+              ) : null}
+              {!isLoading && options.length === 0 ? (
+                <CommandPrimitive.Empty className="select-none rounded-sm px-2 py-3 text-center text-sm">
+                  {emptyMessage}
+                </CommandPrimitive.Empty>
+              ) : null}
+            </CommandList>
+          </div>
+        </div>
+      </CommandPrimitive>
+    </>
   )
 }

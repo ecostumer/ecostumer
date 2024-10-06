@@ -1,14 +1,17 @@
-import { getCurrentOrg } from '@/auth/auth'
+'use client'
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { getProducts } from '@/http/get-products'
 
 import { Overview } from './tabs/overview/index'
-import { Purchases } from './tabs/tables'
+import Purchases from './tabs/tables'
 
-export default async function CreatePurchase() {
-  const slug = getCurrentOrg()
+export default function CreatePurchase() {
+  // const { slug } = useParams<{ slug: string }>()
 
-  const { products } = await getProducts({ slug })
+  // const { data } = useQuery({
+  //   queryKey: [slug, 'products'],
+  //   queryFn: () => getProducts({ slug }),
+  // })
 
   return (
     <>
@@ -46,7 +49,7 @@ export default async function CreatePurchase() {
         </TabsList>
 
         <TabsContent value="overview">
-          <Overview products={products} />
+          <Overview />
         </TabsContent>
         <TabsContent value="list">
           <Purchases />

@@ -1,13 +1,13 @@
 import { Skeleton } from '@/components/ui/skeleton'
 import { TableBody, TableCell, TableRow } from '@/components/ui/table'
 
-export interface WebhooksSkeletonTableProps {
+export interface PurchaseSkeletonTableProps {
   rows?: number
 }
 
-export function WebhooksSkeletonTable({
+export function PurchaseSkeletonTable({
   rows = 5,
-}: WebhooksSkeletonTableProps) {
+}: PurchaseSkeletonTableProps) {
   return (
     <TableBody>
       {Array.from({ length: rows }).map((_, row) => {

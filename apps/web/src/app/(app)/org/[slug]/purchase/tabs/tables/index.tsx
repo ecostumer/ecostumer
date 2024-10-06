@@ -1,11 +1,24 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { getCookie } from 'cookies-next'
-import { EyeIcon, Loader2 } from 'lucide-react'
-import { useSearchParams } from 'next/navigation'
+import { EyeIcon, Loader2, PencilIcon, TrashIcon } from 'lucide-react'
+import { useParams, useRouter } from 'next/navigation'
+import { parseAsString, useQueryStates } from 'nuqs'
 import { Suspense, useState } from 'react'
 
+import InvoicePDF from '@/components/invoice-pdf'
+import NonFiscalReceiptPDF from '@/components/non-fiscal-receipt-pdf'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -32,7 +45,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { getPurchases, GetPurchasesResponse } from '@/http/get-purchases'
+import { getPurchases } from '@/http/get-purchases'
 import { formatCurrency } from '@/utils/format-currency'
 
 import { TablesPagination } from './tables-pagination'
@@ -51,25 +64,25 @@ interface Purchase {
   products: { id: string; name: string; price: number; quantity: number }[]
 }
 
-export function Purchases() {
+export default function Purchases() {
   const [selectedPurchase, setSelectedPurchase] = useState<Purchase | null>(
     null,
   )
+  const { slug } = useParams<{ slug: string }>()
+  const router = useRouter()
 
-  const slug = getCookie('org') as string | null
-  const searchParams = useSearchParams()
+  const [params] = useQueryStates({
+    pageIndex: parseAsString.withDefault('0'),
+    pageSize: parseAsString.withDefault('10'),
+    titleFilter: parseAsString.withDefault(''),
+  })
 
-  const pageIndex = parseInt(searchParams.get('pageIndex') || '0', 10)
-  const pageSize = parseInt(searchParams.get('pageSize') || '5', 10)
+  const pageIndex = Number(params.pageIndex)
+  const pageSize = Number(params.pageSize)
 
-  const {
-    data: purchasesResponse,
-    isLoading,
-    // isFetching,
-  } = useQuery<GetPurchasesResponse>({
+  const { data: purchasesResponse, isLoading } = useQuery({
     queryKey: ['purchases', slug, pageIndex, pageSize],
-    queryFn: async () =>
-      await getPurchases({ slug, page: pageIndex + 1, pageSize }),
+    queryFn: () => getPurchases({ slug, page: pageIndex + 1, pageSize }),
     staleTime: 5 * 60 * 1000,
     enabled: !!slug,
   })
@@ -78,9 +91,15 @@ export function Purchases() {
     ? purchasesResponse.purchases
     : []
 
-  console.log(purchasesResponse)
+  const pageCount = purchasesResponse?.totalPages || 1
 
-  console.log(purchases)
+  const handleEdit = (purchaseId: string) => {
+    router.push(`/purchases/${purchaseId}/edit`)
+  }
+
+  const handleDelete = (purchaseId: string) => {
+    console.log(`Deleting purchase ${purchaseId}`)
+  }
 
   return (
     <>
@@ -126,90 +145,150 @@ export function Purchases() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setSelectedPurchase(purchase)}
-                          >
-                            <EyeIcon className="mr-2 h-4 w-4" />
-                            Ver Detalhes
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
-                          <DialogHeader>
-                            <DialogTitle>Detalhes da Compra</DialogTitle>
-                          </DialogHeader>
-                          {selectedPurchase && (
-                            <div className="grid gap-4 py-4">
-                              <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="name" className="text-right">
-                                  Nome
-                                </Label>
-                                <div id="name" className="col-span-3">
-                                  {selectedPurchase.clientName}
+                      <div className="flex space-x-2">
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setSelectedPurchase(purchase)}
+                            >
+                              <EyeIcon className="mr-2 h-4 w-4" />
+                              Ver
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[625px]">
+                            <DialogHeader>
+                              <DialogTitle>Detalhes da Compra</DialogTitle>
+                            </DialogHeader>
+                            {selectedPurchase && (
+                              <div className="grid gap-4 py-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <Label className="font-bold">Cliente</Label>
+                                    <p>{selectedPurchase.clientName}</p>
+                                  </div>
+                                  <div>
+                                    <Label className="font-bold">Data</Label>
+                                    <p>
+                                      {new Date(
+                                        selectedPurchase.purchaseDate,
+                                      ).toLocaleString('pt-BR')}
+                                    </p>
+                                  </div>
+                                </div>
+                                <Separator />
+                                <div>
+                                  <Label className="font-bold">Produtos</Label>
+                                  <Table>
+                                    <TableHeader>
+                                      <TableRow>
+                                        <TableHead>Nome</TableHead>
+                                        <TableHead>Quantidade</TableHead>
+                                        <TableHead>Preço</TableHead>
+                                        <TableHead>Total</TableHead>
+                                      </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                      {selectedPurchase.products.map(
+                                        (product) => (
+                                          <TableRow key={product.id}>
+                                            <TableCell>
+                                              {product.name}
+                                            </TableCell>
+                                            <TableCell>
+                                              {product.quantity}
+                                            </TableCell>
+                                            <TableCell>
+                                              {formatCurrency(product.price)}
+                                            </TableCell>
+                                            <TableCell>
+                                              {formatCurrency(
+                                                product.price *
+                                                  product.quantity,
+                                              )}
+                                            </TableCell>
+                                          </TableRow>
+                                        ),
+                                      )}
+                                    </TableBody>
+                                  </Table>
+                                </div>
+                                <Separator />
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <Label className="font-bold">
+                                      Método de Pagamento
+                                    </Label>
+                                    <p className="capitalize">
+                                      {selectedPurchase.paymentMethod}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <Label className="font-bold">
+                                      Valor Total
+                                    </Label>
+                                    <p className="text-xl font-bold">
+                                      {formatCurrency(
+                                        selectedPurchase.purchaseAmount,
+                                      )}
+                                    </p>
+                                  </div>
+                                </div>
+                                {selectedPurchase.description && (
+                                  <div>
+                                    <Label className="font-bold">
+                                      Descrição
+                                    </Label>
+                                    <p>{selectedPurchase.description}</p>
+                                  </div>
+                                )}
+                                <div className="flex space-x-2">
+                                  <NonFiscalReceiptPDF
+                                    purchase={selectedPurchase}
+                                  />
+                                  <InvoicePDF purchase={selectedPurchase} />
                                 </div>
                               </div>
-                              <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="amount" className="text-right">
-                                  Valor
-                                </Label>
-                                <div id="amount" className="col-span-3">
-                                  {formatCurrency(
-                                    selectedPurchase.purchaseAmount,
-                                  )}
-                                </div>
-                              </div>
-                              <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="method" className="text-right">
-                                  Método
-                                </Label>
-                                <div
-                                  id="method"
-                                  className="col-span-3 capitalize"
-                                >
-                                  {selectedPurchase.paymentMethod}
-                                </div>
-                              </div>
-                              <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="date" className="text-right">
-                                  Data
-                                </Label>
-                                <div id="date" className="col-span-3">
-                                  {new Date(
-                                    selectedPurchase.purchaseDate,
-                                  ).toLocaleString('pt-BR')}
-                                </div>
-                              </div>
-                              <Separator />
-                              <div className="grid grid-cols-4 items-center gap-4">
-                                <Label
-                                  htmlFor="description"
-                                  className="text-right"
-                                >
-                                  Descrição
-                                </Label>
-                                <div id="description" className="col-span-3">
-                                  {selectedPurchase.description}
-                                </div>
-                              </div>
-                              <div className="grid grid-cols-4 items-center gap-4">
-                                <Label
-                                  htmlFor="products"
-                                  className="text-right"
-                                >
-                                  Produtos
-                                </Label>
-                                <div id="products" className="col-span-3">
-                                  {selectedPurchase.products.join(', ') ||
-                                    'Nenhum produto listado'}
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                        </DialogContent>
-                      </Dialog>
+                            )}
+                          </DialogContent>
+                        </Dialog>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEdit(purchase.id)}
+                        >
+                          <PencilIcon className="mr-2 h-4 w-4" />
+                          Editar
+                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="outline" size="sm">
+                              <TrashIcon className="mr-2 h-4 w-4" />
+                              Excluir
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Você tem certeza?
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Esta ação não pode ser desfeita. Isso excluirá
+                                permanentemente esta compra.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDelete(purchase.id)}
+                              >
+                                Confirmar
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
@@ -225,12 +304,11 @@ export function Purchases() {
         </CardContent>
 
         <CardFooter>
-          <Suspense>
+          <Suspense fallback={null}>
             <TablesPagination
-              pageCount={purchasesResponse?.totalPages || 1}
+              pageCount={pageCount}
               pageIndex={pageIndex}
               pageSize={pageSize}
-              slug={slug}
             />
           </Suspense>
         </CardFooter>

@@ -5,13 +5,21 @@ export function middleware(request: NextRequest) {
 
   const response = NextResponse.next()
 
-  response.cookies.set('path-name', pathname)
+  // Definir o cookie `path-name` com o caminho atual
+  response.cookies.set('path-name', pathname, {
+    path: '/', // Certificar que o cookie está disponível em todas as rotas
+  })
 
   if (pathname.startsWith('/org')) {
     const [, , slug] = pathname.split('/')
 
-    response.cookies.set('org', slug)
+    response.cookies.set('org', slug, {
+      path: '/',
+      sameSite: 'lax', // Definir `SameSite` como lax para evitar restrições de envio em certos casos
+      secure: process.env.NODE_ENV === 'production', // Tornar o cookie seguro apenas em produção
+    })
   } else {
+    // Deletar o cookie `org` se o caminho não começar com `/org`
     response.cookies.delete('org')
   }
 

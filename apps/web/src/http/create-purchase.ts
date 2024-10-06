@@ -1,5 +1,3 @@
-import { getCurrentSlug } from '@/utils/get-slug'
-
 import { api } from './api-client'
 
 interface CreatePurchaseRequest {
@@ -11,24 +9,19 @@ interface CreatePurchaseRequest {
     paymentMethod: string
     purchaseAmount: number
     purchaseDate: Date
-    description?: string // Tornar opcional
+    description?: string
     clientId: string
-    discount?: number // Incluir se necessário
+    discount?: number
   }
+  slug: string
 }
 
 type CreatePurchaseResponse = void
 
 export async function createPurchase({
   purchase,
+  slug,
 }: CreatePurchaseRequest): Promise<CreatePurchaseResponse> {
-  const slug = getCurrentSlug()
-
-  if (!slug) {
-    throw new Error('Organização não encontrada no cookie.')
-  }
-
-  // Formatar a data como ISO string
   const formattedPurchaseDate = purchase.purchaseDate.toISOString()
 
   await api.post(
@@ -42,9 +35,8 @@ export async function createPurchase({
         paymentMethod: purchase.paymentMethod,
         purchaseAmount: purchase.purchaseAmount,
         purchaseDate: formattedPurchaseDate,
-        description: purchase.description || '', // Usar string vazia se undefined
-        ...(purchase.discount !== undefined && { discount: purchase.discount }), // Incluir desconto se disponível
-        // Remover clientId do corpo da requisição
+        description: purchase.description || '',
+        ...(purchase.discount !== undefined && { discount: purchase.discount }),
       },
     },
   )
