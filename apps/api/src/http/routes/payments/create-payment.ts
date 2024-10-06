@@ -1,3 +1,4 @@
+import { env } from '@saas/env'
 import { PaymentGatewayFactory } from '@saas/gateway'
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
@@ -78,8 +79,8 @@ export async function createPayment(app: FastifyInstance) {
 
         try {
           const amountInCents = plan.price * 100
-          const returnUrl = `${env.APP_URL}/payments/success?subscriptionId=${subscription.id}`
-          const cancelUrl = `${env.APP_URL}/payments/cancel`
+          const returnUrl = `${env.NEXT_PUBLIC_API_URL}/payments/success?subscriptionId=${subscription.id}`
+          const cancelUrl = `${env.NEXT_PUBLIC_API_URL}/payments/cancel`
 
           app.log.info('Inicializando pagamento com os seguintes dados:', {
             amount: amountInCents,

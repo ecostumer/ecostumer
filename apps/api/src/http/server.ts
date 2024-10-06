@@ -4,6 +4,7 @@ import fastifySwagger from '@fastify/swagger'
 import fastifySwaggerUI from '@fastify/swagger-ui'
 import { env } from '@saas/env'
 import { fastify } from 'fastify'
+import fastifyRawBody from 'fastify-raw-body'
 import {
   jsonSchemaTransform,
   serializerCompiler,
@@ -60,6 +61,14 @@ import { getPurchases } from './routes/purchases/get-purchases'
 import { updatePurchase } from './routes/purchases/update-purchase'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
+
+app.register(fastifyRawBody, {
+  field: 'rawBody',
+  global: false,
+  encoding: 'utf8',
+  runFirst: true,
+})
+
 app.setSerializerCompiler(serializerCompiler)
 app.setValidatorCompiler(validatorCompiler)
 

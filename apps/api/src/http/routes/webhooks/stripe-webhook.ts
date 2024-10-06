@@ -1,10 +1,10 @@
 import { env } from '@saas/env'
-import { prisma } from '@saas/prisma'
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import Stripe from 'stripe'
 
 import { auth } from '@/http/middleware/auth'
+import { prisma } from '@/lib/prisma'
 
 export async function stripeWebhook(app: FastifyInstance) {
   app
