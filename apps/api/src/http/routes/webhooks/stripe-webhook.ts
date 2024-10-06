@@ -73,7 +73,7 @@ export async function stripeWebhook(app: FastifyInstance) {
       throw new Error('subscriptionId não encontrado nos metadados da sessão.')
     }
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: any) => {
       // Atualizar o pagamento
       await tx.payment.updateMany({
         where: { transactionId: paymentId },
