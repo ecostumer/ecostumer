@@ -4,12 +4,15 @@ import { redirect } from 'next/navigation'
 
 import { getCurrentOrg } from '@/auth/auth'
 import { OrganizationSwitcher } from '@/components/organization-switcher'
+import { Header } from '@/components/header'
 export default async function Home() {
   // noCache()
 
   const org = getCurrentOrg()
 
   return (
+    <>
+    <Header/>
     <div className="space-y-4 py-4">
       <main className="mx-auto w-full max-w-[1200px] space-y-4">
         {org ? (
@@ -22,5 +25,6 @@ export default async function Home() {
         )}
       </main>
     </div>
+    </>
   )
 }
