@@ -47,7 +47,7 @@ export async function stripeWebhook(app: FastifyInstance) {
           }
         }
 
-        // Processar o evento
+        // Processar o evento...
         switch (event.type) {
           case 'checkout.session.completed': {
             const session = event.data.object as Stripe.Checkout.Session
